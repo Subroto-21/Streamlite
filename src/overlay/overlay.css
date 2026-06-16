@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/*
+ * OBS browser source requires a fully transparent background.
+ * This overrides both browser defaults and Tailwind's @layer base preflight.
+ * The matching inline style in overlay.html provides a second layer of defence
+ * against any white flash before this stylesheet loads.
+ */
+html,
+body {
+  background: transparent !important;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Widget entry animations ─────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes bounceIn {
+  0%   { transform: scale(0.85); opacity: 0; }
+  60%  { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(1);    opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.anim-fade   { animation: fadeIn   0.25s ease forwards; }
+.anim-slide  { animation: slideIn  0.3s  ease forwards; }
+.anim-bounce { animation: bounceIn 0.4s  ease forwards; }
+.anim-exit   { animation: fadeOut  0.2s  ease forwards; }
