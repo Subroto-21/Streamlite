@@ -72,7 +72,7 @@ const Overlay: Component = () => {
   // e.g. __sl.patch({ chat: { enabled: false } })
   // e.g. __sl.addAlert({ id:'1', platform:'kick', type:'subscription', username:'Test', monthsSubscribed:3, timestamp: Date.now() })
   if (import.meta.env.DEV) {
-    ;(window as Record<string, unknown>).__sl = {
+    ;(window as unknown as Record<string, unknown>).__sl = {
       addMessage, addAlert, messageStore, alertStore,
       patch: (p: Parameters<typeof applyConfigPatch>[1]) => applyConfigPatch(setConfig, p),
       // Build a full overlay URL for a given channel slug — paste into OBS or browser.

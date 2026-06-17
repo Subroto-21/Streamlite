@@ -2,6 +2,25 @@ import { createEffect, createSignal, onCleanup, type Component } from 'solid-js'
 import LZString from 'lz-string'
 import { builderConfig } from '../store/builderConfigStore'
 
+const BoltIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/>
+  </svg>
+)
+
+const CopyIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="9" y="9" width="11" height="11" rx="2"/>
+    <path d="M5 15V5a2 2 0 0 1 2-2h10"/>
+  </svg>
+)
+
+const CheckIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 6 9 17l-5-5"/>
+  </svg>
+)
+
 const LinkOutput: Component = () => {
   const [overlayUrl, setOverlayUrl] = createSignal('')
   const [copied, setCopied] = createSignal(false)
@@ -9,8 +28,6 @@ const LinkOutput: Component = () => {
   let copyTimer: ReturnType<typeof setTimeout>
 
   createEffect(() => {
-    // JSON.stringify reads through the SolidJS store proxy, registering reactive
-    // dependencies on every property. The effect re-runs on any config change.
     const json = JSON.stringify(builderConfig)
     clearTimeout(debounceTimer)
     debounceTimer = setTimeout(() => {
@@ -29,24 +46,56 @@ const LinkOutput: Component = () => {
   }
 
   return (
-    <div class="flex items-center gap-3 px-6 py-3">
-      <span class="text-xs text-gray-500 flex-shrink-0 whitespace-nowrap">Overlay URL</span>
+    <div style={{
+      display: 'flex', 'align-items': 'center', gap: '10px',
+      padding: '10px 16px',
+    }}>
+      <span style={{
+        display: 'inline-flex', 'align-items': 'center', gap: '6px',
+        'font-size': '12px', 'font-weight': '500', color: 'var(--violet-400)',
+        'flex-shrink': '0', 'white-space': 'nowrap',
+      }}>
+        <BoltIcon />
+        Overlay URL
+      </span>
+
       <input
         type="text"
-        readOnly
-        class="flex-1 bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-300 font-mono min-w-0"
+        readonly
+        style={{
+          flex: '1', 'min-width': '0',
+          background: 'var(--surface-2)',
+          border: '1px solid var(--border-default)',
+          'border-radius': 'var(--radius-md)',
+          padding: '7px 12px',
+          'font-size': '12px',
+          'font-family': 'var(--font-mono)',
+          color: 'var(--text-tertiary)',
+          outline: 'none',
+          cursor: 'text',
+          overflow: 'hidden',
+          'text-overflow': 'ellipsis',
+          'white-space': 'nowrap',
+        }}
         value={overlayUrl()}
         onClick={(e) => e.currentTarget.select()}
       />
+
       <button
-        class={`px-4 py-1.5 rounded text-sm font-medium flex-shrink-0 transition-colors ${
-          copied()
-            ? 'bg-green-700 text-green-200'
-            : 'bg-blue-600 hover:bg-blue-500 text-white'
-        }`}
         onClick={copy}
+        style={{
+          display: 'inline-flex', 'align-items': 'center', gap: '6px',
+          'flex-shrink': '0', padding: '7px 14px',
+          'border-radius': 'var(--radius-md)', border: 'none', cursor: 'pointer',
+          'font-size': '13px', 'font-weight': '600',
+          transition: 'background var(--dur-fast), box-shadow var(--dur-fast)',
+          background: copied() ? 'var(--green-600)' : 'var(--grad-brand)',
+          color: copied() ? 'var(--text-on-green)' : 'var(--text-on-violet)',
+          'box-shadow': copied() ? 'var(--glow-green)' : 'var(--glow-violet)',
+        }}
       >
-        {copied() ? 'Copied!' : 'Copy'}
+        {copied() ? <CheckIcon /> : <CopyIcon />}
+        {copied() ? 'Copied!' : 'Copy link'}
       </button>
     </div>
   )

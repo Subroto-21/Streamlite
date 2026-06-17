@@ -1,6 +1,171 @@
 @import "tailwindcss";
 
-/* ── Widget entry animations (shared between overlay and builder preview) ── */
+/* ── Streamlite design tokens ────────────────────────────────────────────── */
+
+:root {
+  /* Brand violet */
+  --violet-50:  #f3ecff;
+  --violet-100: #e4d4ff;
+  --violet-200: #cbb0ff;
+  --violet-300: #b08bff;
+  --violet-400: #9c6bff;
+  --violet-500: #863bff;
+  --violet-600: #7e14ff;
+  --violet-700: #6a0fd6;
+  --brand-blue: #4d7cff;
+
+  /* Electric green — live / energy */
+  --green-300: #9dff74;
+  --green-400: #7dff52;
+  --green-500: #53fc18;
+  --green-600: #3dd60a;
+
+  /* Surfaces — near-black with violet cast */
+  --black:      #050308;
+  --bg-base:    #08060d;
+  --bg-canvas:  #0b0810;
+  --surface-1:  #110d18;
+  --surface-2:  #181320;
+  --surface-3:  #221b2e;
+  --surface-4:  #2d2540;
+
+  /* Borders */
+  --border-subtle:  rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --border-strong:  rgba(255, 255, 255, 0.16);
+  --border-violet:  rgba(134, 59, 255, 0.45);
+
+  /* Text */
+  --text-primary:   #f5f2fb;
+  --text-secondary: #b6aecb;
+  --text-tertiary:  #847c98;
+  --text-muted:     #5a5470;
+  --text-on-violet: #ffffff;
+  --text-on-green:  #07210a;
+
+  /* Status */
+  --success: #53fc18;
+  --warning: #ffc23d;
+  --danger:  #ff4d63;
+  --info:    #4d7cff;
+
+  /* Platform colors */
+  --kick:    #53fc18;
+  --twitch:  #9146ff;
+  --youtube: #ff0033;
+
+  /* Glows */
+  --glow-violet: 0 0 0 1px rgba(134,59,255,0.35), 0 8px 40px -8px rgba(134,59,255,0.55);
+  --glow-green:  0 0 0 1px rgba(83,252,24,0.30), 0 8px 36px -10px rgba(83,252,24,0.50);
+
+  /* Gradients */
+  --grad-brand:        linear-gradient(135deg, #863bff 0%, #4d7cff 100%);
+  --grad-brand-vivid:  linear-gradient(135deg, #9c6bff 0%, #863bff 45%, #4d7cff 100%);
+  --grad-live:         linear-gradient(135deg, #53fc18 0%, #3dd60a 100%);
+  --grad-surface:      linear-gradient(180deg, #181320 0%, #110d18 100%);
+  --grad-canvas-glow:  radial-gradient(120% 80% at 50% -10%, rgba(134,59,255,0.16) 0%, rgba(8,6,13,0) 60%);
+
+  /* Semantic aliases */
+  --brand:           var(--violet-500);
+  --brand-strong:    var(--violet-600);
+  --accent-live:     var(--green-500);
+  --bg-app:          var(--bg-base);
+  --surface-card:    var(--surface-1);
+  --surface-raised:  var(--surface-2);
+  --surface-hover:   var(--surface-3);
+  --surface-active:  var(--surface-4);
+  --text-body:       var(--text-secondary);
+  --text-heading:    var(--text-primary);
+  --text-faint:      var(--text-muted);
+
+  /* Typography */
+  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:    'Fira Code', 'SF Mono', 'Courier New', monospace;
+
+  /* Type scale */
+  --text-2xs: 11px;
+  --text-xs:  12px;
+  --text-sm:  13px;
+  --text-base:14px;
+  --text-md:  15px;
+  --text-lg:  17px;
+  --text-xl:  20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+
+  /* Radius */
+  --radius-xs:   4px;
+  --radius-sm:   6px;
+  --radius-md:   9px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  22px;
+  --radius-3xl:  30px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-xs:  0 1px 2px rgba(0,0,0,0.40);
+  --shadow-sm:  0 2px 8px rgba(0,0,0,0.45);
+  --shadow-md:  0 8px 24px -6px rgba(0,0,0,0.55);
+  --shadow-lg:  0 18px 48px -12px rgba(0,0,0,0.65);
+  --shadow-xl:  0 32px 70px -18px rgba(0,0,0,0.72);
+
+  /* Motion */
+  --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:    120ms;
+  --dur-base:    200ms;
+  --dur-slow:    320ms;
+
+  /* Layout */
+  --sidebar-w: 300px;
+  --header-h:  56px;
+}
+
+/* ── Base reset ──────────────────────────────────────────────────────────── */
+
+::selection { background: rgba(134,59,255,0.40); color: #fff; }
+
+/* ── Utility classes ─────────────────────────────────────────────────────── */
+
+.sl-eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+.sl-grad-text {
+  background: var(--grad-brand-vivid);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.sl-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-3) transparent;
+}
+.sl-scroll::-webkit-scrollbar { width: 6px; }
+.sl-scroll::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 999px; }
+.sl-scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* Checkerboard = OBS transparent canvas */
+.sl-checkerboard {
+  background-color: #0d0a14;
+  background-image:
+    linear-gradient(45deg, #15101f 25%, transparent 25%),
+    linear-gradient(-45deg, #15101f 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #15101f 75%),
+    linear-gradient(-45deg, transparent 75%, #15101f 75%);
+  background-size: 22px 22px;
+  background-position: 0 0, 0 11px, 11px -11px, -11px 0;
+}
+
+/* ── Widget entry animations ─────────────────────────────────────────────── */
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -23,7 +188,13 @@
   to   { opacity: 0; }
 }
 
+@keyframes livePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
 .anim-fade   { animation: fadeIn   0.25s ease forwards; }
 .anim-slide  { animation: slideIn  0.3s  ease forwards; }
 .anim-bounce { animation: bounceIn 0.4s  ease forwards; }
 .anim-exit   { animation: fadeOut  0.2s  ease forwards; }
+.anim-pulse  { animation: livePulse 2s ease-in-out infinite; }

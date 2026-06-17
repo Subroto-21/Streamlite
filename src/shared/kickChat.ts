@@ -85,7 +85,8 @@ export class KickChatClient {
       platform: 'kick',
       username: data.sender.username,
       color: data.sender.identity.color || undefined,
-      badges: data.sender.identity.badges.map(b => b.type),
+      badges: data.sender.identity.badges.map(b => ({ type: b.type, imageUrl: '', label: b.text })),
+      primaryRole: 'user' as const,
       message: data.content,
       timestamp: Date.now(),
     }

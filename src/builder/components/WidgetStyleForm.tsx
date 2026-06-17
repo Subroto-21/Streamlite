@@ -3,7 +3,13 @@ import type { LayoutConfig, WidgetStyle } from '../../shared/types'
 import { builderConfig, setBuilderConfig } from '../store/builderConfigStore'
 import { applyConfigPatch } from '../../shared/applyConfigPatch'
 
-// ── Reusable sub-components ───────────────────────────────────────────────
+// ── Sub-components ────────────────────────────────────────────────────────
+
+function SectionLabel(p: { children: string }) {
+  return (
+    <div class="sl-eyebrow" style={{ margin: '16px 0 8px' }}>{p.children}</div>
+  )
+}
 
 interface SliderProps {
   label: string
@@ -17,14 +23,19 @@ interface SliderProps {
 
 function SliderField(p: SliderProps) {
   return (
-    <div class="mb-3">
-      <div class="flex justify-between text-xs text-gray-400 mb-1">
-        <span>{p.label}</span>
-        <span>{p.value}{p.unit ?? ''}</span>
+    <div style={{ 'margin-bottom': '10px' }}>
+      <div style={{
+        display: 'flex', 'justify-content': 'space-between',
+        'font-size': '12px', 'margin-bottom': '5px',
+      }}>
+        <span style={{ color: 'var(--text-secondary)' }}>{p.label}</span>
+        <span style={{ color: 'var(--text-tertiary)', 'font-family': 'var(--font-mono)', 'font-size': '11px' }}>
+          {p.value}{p.unit ?? ''}
+        </span>
       </div>
       <input
         type="range"
-        class="w-full accent-green-500"
+        style={{ width: '100%', 'accent-color': 'var(--violet-500)', cursor: 'pointer' }}
         min={p.min} max={p.max} step={p.step ?? 1}
         value={p.value}
         onInput={(e) => p.onChange(+e.currentTarget.value)}
@@ -41,25 +52,50 @@ interface ColorProps {
 
 function ColorField(p: ColorProps) {
   return (
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-sm text-gray-300">{p.label}</span>
-      <input
-        type="color"
-        value={p.value}
-        class="w-10 h-8 rounded cursor-pointer border border-gray-600 bg-transparent"
-        onInput={(e) => p.onChange(e.currentTarget.value)}
-      />
+    <div style={{
+      display: 'flex', 'align-items': 'center', 'justify-content': 'space-between',
+      'margin-bottom': '10px',
+    }}>
+      <span style={{ 'font-size': '12px', color: 'var(--text-secondary)' }}>{p.label}</span>
+      <div style={{ display: 'flex', 'align-items': 'center', gap: '8px' }}>
+        <span style={{ 'font-size': '11px', color: 'var(--text-muted)', 'font-family': 'var(--font-mono)' }}>
+          {p.value}
+        </span>
+        <div style={{
+          position: 'relative', width: '28px', height: '28px',
+          'border-radius': 'var(--radius-sm)', overflow: 'hidden',
+          border: '1px solid var(--border-strong)', cursor: 'pointer',
+        }}>
+          <div style={{ position: 'absolute', inset: '0', background: p.value }} />
+          <input
+            type="color"
+            value={p.value}
+            style={{
+              position: 'absolute', inset: '-4px', opacity: '0',
+              cursor: 'pointer', width: 'calc(100% + 8px)', height: 'calc(100% + 8px)',
+            }}
+            onInput={(e) => p.onChange(e.currentTarget.value)}
+          />
+        </div>
+      </div>
     </div>
   )
 }
 
-// ── Main form ─────────────────────────────────────────────────────────────
+// ── Form component ────────────────────────────────────────────────────────
 
 interface Props {
   widgetKey: keyof LayoutConfig['widgets']
 }
 
 type WidgetPatch = Parameters<typeof applyConfigPatch>[1]
+
+const selectStyle = {
+  width: '100%', background: 'var(--surface-2)',
+  border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)',
+  padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)',
+  outline: 'none', cursor: 'pointer', 'margin-bottom': '10px',
+}
 
 const WidgetStyleForm: Component<Props> = (props) => {
   const widget = () => builderConfig.widgets[props.widgetKey] as WidgetStyle
@@ -71,36 +107,32 @@ const WidgetStyleForm: Component<Props> = (props) => {
     )
 
   return (
-    <div class="px-4 pb-6">
+    <div style={{ padding: '4px 14px 24px' }}>
 
-      <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-4">Position</p>
+      <SectionLabel>Position</SectionLabel>
       <SliderField label="X" value={widget().x} min={0} max={95} unit="%" onChange={(v) => p('x', v)} />
       <SliderField label="Y" value={widget().y} min={0} max={95} unit="%" onChange={(v) => p('y', v)} />
 
-      <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-4">Size</p>
+      <SectionLabel>Size</SectionLabel>
       <SliderField label="Width"  value={widget().width}  min={5} max={100} unit="%" onChange={(v) => p('width', v)} />
       <SliderField label="Height" value={widget().height} min={5} max={100} unit="%" onChange={(v) => p('height', v)} />
 
-      <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-4">Background</p>
+      <SectionLabel>Background</SectionLabel>
       <ColorField label="Color" value={widget().backgroundColor} onChange={(v) => p('backgroundColor', v)} />
-      <SliderField
-        label="Opacity" value={widget().backgroundOpacity}
-        min={0} max={1} step={0.05}
-        onChange={(v) => p('backgroundOpacity', v)}
-      />
+      <SliderField label="Opacity" value={widget().backgroundOpacity} min={0} max={1} step={0.05} onChange={(v) => p('backgroundOpacity', v)} />
 
-      <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-4">Text</p>
-      <ColorField label="Text color"   value={widget().textColor}   onChange={(v) => p('textColor', v)} />
-      <ColorField label="Accent color" value={widget().accentColor} onChange={(v) => p('accentColor', v)} />
+      <SectionLabel>Color</SectionLabel>
+      <ColorField label="Text"   value={widget().textColor}   onChange={(v) => p('textColor', v)} />
+      <ColorField label="Accent" value={widget().accentColor} onChange={(v) => p('accentColor', v)} />
 
-      <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-4">Shape</p>
-      <SliderField label="Border radius" value={widget().borderRadius} min={0} max={40} unit="px" onChange={(v) => p('borderRadius', v)} />
+      <SectionLabel>Shape & Type</SectionLabel>
+      <SliderField label="Corner radius" value={widget().borderRadius} min={0} max={40} unit="px" onChange={(v) => p('borderRadius', v)} />
+      <SliderField label="Font size"     value={widget().fontSize}     min={10} max={32} unit="px" onChange={(v) => p('fontSize', v)} />
 
-      <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-4">Typography</p>
-      <div class="mb-3">
-        <p class="text-sm text-gray-400 mb-1">Font</p>
+      <div style={{ 'margin-bottom': '2px' }}>
+        <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Font</span>
         <select
-          class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-sm text-white"
+          style={selectStyle}
           value={widget().fontFamily}
           onChange={(e) => p('fontFamily', e.currentTarget.value)}
         >
@@ -110,45 +142,45 @@ const WidgetStyleForm: Component<Props> = (props) => {
           <option value="mono">Mono</option>
         </select>
       </div>
-      <SliderField label="Font size" value={widget().fontSize} min={10} max={32} unit="px" onChange={(v) => p('fontSize', v)} />
 
-      <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-4">Animation</p>
-      <select
-        class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-sm text-white mb-3"
-        value={widget().animation}
-        onChange={(e) => p('animation', e.currentTarget.value)}
-      >
-        <option value="none">None</option>
-        <option value="fade">Fade</option>
-        <option value="slide">Slide</option>
-        <option value="bounce">Bounce</option>
-      </select>
+      <div>
+        <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Entrance animation</span>
+        <select
+          style={selectStyle}
+          value={widget().animation}
+          onChange={(e) => p('animation', e.currentTarget.value)}
+        >
+          <option value="none">None</option>
+          <option value="fade">Fade</option>
+          <option value="slide">Slide</option>
+          <option value="bounce">Bounce</option>
+        </select>
+      </div>
 
       <Show when={props.widgetKey === 'followerGoal'}>
-        <p class="text-xs text-gray-500 uppercase tracking-wider mb-2 mt-4">Goal</p>
-        <div class="mb-3">
-          <p class="text-sm text-gray-400 mb-1">Label</p>
+        <SectionLabel>Goal</SectionLabel>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Label</span>
           <input
             type="text"
-            class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-sm text-white"
+            style={{
+              width: '100%', background: 'var(--surface-2)',
+              border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)',
+              padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)',
+              outline: 'none',
+            }}
             value={builderConfig.widgets.followerGoal.goalLabel}
             onInput={(e) =>
               applyConfigPatch(setBuilderConfig, { followerGoal: { goalLabel: e.currentTarget.value } })
             }
           />
         </div>
-        <div class="mb-3">
-          <p class="text-sm text-gray-400 mb-1">Target</p>
-          <input
-            type="number"
-            min="1"
-            class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1.5 text-sm text-white"
-            value={builderConfig.widgets.followerGoal.goalTarget}
-            onInput={(e) =>
-              applyConfigPatch(setBuilderConfig, { followerGoal: { goalTarget: +e.currentTarget.value } })
-            }
-          />
-        </div>
+        <SliderField
+          label="Target"
+          value={builderConfig.widgets.followerGoal.goalTarget}
+          min={10} max={10000} step={10}
+          onChange={(v) => applyConfigPatch(setBuilderConfig, { followerGoal: { goalTarget: v } })}
+        />
       </Show>
 
     </div>

@@ -15,13 +15,6 @@ const Builder: Component = () => {
   const [selectedWidget, setSelectedWidget] = createSignal<keyof LayoutConfig['widgets']>('chat')
   const [chatStatus, setChatStatus] = createSignal<'connected' | 'disconnected' | 'reconnecting' | ''>('')
 
-  // WHY Option A: render actual overlay components directly (same components as
-  // OBS uses, fed by builderConfigStore). An iframe would require re-encoding
-  // the full URL on every slider tick and triggering a navigation — far worse
-  // than sharing the component tree within the same Vite page.
-
-  // Reconnect whenever kickChannelSlug changes. onCleanup tears down the previous
-  // adapter so we never hold multiple Pusher sockets for the same channel.
   createEffect(() => {
     const slug = builderConfig.kickChannelSlug
     if (!slug) {
@@ -37,71 +30,139 @@ const Builder: Component = () => {
   })
 
   return (
-    <div class="h-screen flex flex-col bg-gray-900 text-white overflow-hidden">
+    <div style={{
+      height: '100vh', display: 'flex', 'flex-direction': 'column',
+      background: 'var(--bg-app)', overflow: 'hidden',
+      'font-family': 'var(--font-sans)', color: 'var(--text-body)',
+    }}>
 
       {/* Header */}
-      <header class="border-b border-gray-700 px-6 py-3 flex-shrink-0 flex items-center gap-2">
-        <h1 class="text-lg font-semibold tracking-tight">Streamlite</h1>
-        <span class="text-gray-500 text-sm">/ Builder</span>
+      <header style={{
+        height: 'var(--header-h)', 'flex-shrink': '0',
+        'border-bottom': '1px solid var(--border-default)',
+        background: 'var(--bg-base)',
+        display: 'flex', 'align-items': 'center', 'justify-content': 'space-between',
+        padding: '0 18px',
+      }}>
+        <div style={{ display: 'flex', 'align-items': 'center', gap: '11px' }}>
+          <img src="/logo-mark.svg" alt="Streamlite" style={{ width: '26px', height: '26px' }} />
+          <span style={{
+            'font-family': 'var(--font-display)', 'font-size': '18px',
+            'font-weight': '700', 'letter-spacing': '-0.02em', color: 'var(--text-primary)',
+          }}>Streamlite</span>
+          <span style={{ color: 'var(--text-muted)', 'font-size': '14px' }}>/</span>
+          <span style={{ 'font-size': '14px', color: 'var(--text-tertiary)', 'font-weight': '500' }}>Builder</span>
+        </div>
+        <Show when={chatStatus() === 'connected'}>
+          <span style={{
+            display: 'inline-flex', 'align-items': 'center', gap: '6px',
+            'font-size': '12px', 'font-weight': '500', color: 'var(--green-500)',
+            background: 'rgba(83,252,24,0.10)', padding: '4px 10px',
+            'border-radius': 'var(--radius-pill)', border: '1px solid rgba(83,252,24,0.22)',
+          }}>
+            <span class="anim-pulse" style={{
+              width: '7px', height: '7px', 'border-radius': '50%',
+              background: 'var(--green-500)', 'flex-shrink': '0',
+            }} />
+            Live preview
+          </span>
+        </Show>
+        <Show when={chatStatus() === 'reconnecting'}>
+          <span style={{
+            display: 'inline-flex', 'align-items': 'center', gap: '6px',
+            'font-size': '12px', 'font-weight': '500', color: 'var(--warning)',
+            background: 'rgba(255,194,61,0.10)', padding: '4px 10px',
+            'border-radius': 'var(--radius-pill)', border: '1px solid rgba(255,194,61,0.22)',
+          }}>
+            <span style={{ width: '7px', height: '7px', 'border-radius': '50%', background: 'var(--warning)', 'flex-shrink': '0' }} />
+            Reconnecting
+          </span>
+        </Show>
       </header>
 
-      {/* Body: left panel + preview canvas */}
-      <div class="flex-1 flex overflow-hidden">
+      {/* Body */}
+      <div style={{ flex: '1', display: 'flex', overflow: 'hidden' }}>
 
-        {/* Left panel */}
-        <aside class="w-80 flex-shrink-0 border-r border-gray-700 flex flex-col overflow-hidden">
+        {/* Left sidebar */}
+        <aside style={{
+          width: 'var(--sidebar-w)', 'flex-shrink': '0',
+          'border-right': '1px solid var(--border-default)',
+          background: 'var(--surface-1)',
+          display: 'flex', 'flex-direction': 'column', overflow: 'hidden',
+        }}>
 
-          {/* Channel slug */}
-          <div class="p-4 border-b border-gray-700">
-            <label class="text-xs text-gray-500 uppercase tracking-wider block mb-1.5">
-              Kick Channel
-            </label>
-            <div class="flex items-center gap-2">
+          {/* Channel connect */}
+          <div style={{ padding: '14px 14px 12px', 'border-bottom': '1px solid var(--border-default)' }}>
+            <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '8px' }}>
+              <span class="sl-eyebrow">Channel</span>
+            </div>
+            <div style={{
+              display: 'flex', 'align-items': 'center',
+              background: 'var(--surface-2)', 'border-radius': 'var(--radius-md)',
+              border: '1px solid var(--border-default)', overflow: 'hidden',
+            }}>
+              <span style={{
+                padding: '0 10px', 'font-size': '12px', color: 'var(--text-muted)',
+                'font-family': 'var(--font-mono)', 'white-space': 'nowrap',
+                'border-right': '1px solid var(--border-default)',
+                height: '34px', display: 'flex', 'align-items': 'center',
+              }}>kick.com/</span>
               <input
                 type="text"
                 placeholder="channelslug"
-                class="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-green-500 transition-colors"
+                style={{
+                  flex: '1', 'min-width': '0', background: 'transparent',
+                  border: 'none', outline: 'none',
+                  padding: '0 10px', 'font-size': '13px', height: '34px',
+                  color: 'var(--text-primary)', 'font-family': 'var(--font-mono)',
+                }}
                 value={builderConfig.kickChannelSlug ?? ''}
                 onInput={(e) => setKickChannelSlug(e.currentTarget.value.trim())}
               />
-              <Show when={chatStatus()}>
-                <span
-                  class={`text-xs px-2 py-1 rounded flex-shrink-0 ${
-                    chatStatus() === 'connected'
-                      ? 'bg-green-900 text-green-400'
-                      : chatStatus() === 'reconnecting'
-                      ? 'bg-yellow-900 text-yellow-400'
-                      : 'bg-gray-800 text-gray-500'
-                  }`}
-                >
-                  {chatStatus()}
-                </span>
-              </Show>
             </div>
           </div>
 
-          {/* Widget tabs with enabled toggles */}
+          {/* Widget selector */}
           <WidgetSelector selected={selectedWidget()} onSelect={setSelectedWidget} />
 
-          {/* Style form (scrollable) */}
-          <div class="flex-1 overflow-y-auto">
+          {/* Style form */}
+          <div class="sl-scroll" style={{ flex: '1', 'overflow-y': 'auto' }}>
             <WidgetStyleForm widgetKey={selectedWidget()} />
           </div>
 
         </aside>
 
-        {/* Right: live preview */}
-        <main class="flex-1 flex items-center justify-center p-6 bg-gray-950 overflow-hidden">
+        {/* Preview canvas */}
+        <main style={{
+          flex: '1', display: 'flex', 'flex-direction': 'column',
+          'align-items': 'center', 'justify-content': 'center',
+          padding: '24px', background: 'var(--bg-canvas)',
+          'background-image': 'var(--grad-canvas-glow)',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            width: '100%', 'max-width': '900px',
+            display: 'flex', 'align-items': 'center', 'justify-content': 'space-between',
+            'margin-bottom': '10px',
+          }}>
+            <span class="sl-eyebrow">Preview · 1920 × 1080</span>
+            <span style={{
+              display: 'inline-flex', 'align-items': 'center', gap: '6px',
+              'font-size': '11px', color: 'var(--text-muted)',
+            }}>
+              <span style={{ width: '10px', height: '10px', 'border-radius': '3px', display: 'inline-block' }} class="sl-checkerboard" />
+              Transparent canvas (OBS)
+            </span>
+          </div>
           <div
-            class="relative overflow-hidden w-full"
+            class="sl-checkerboard"
             style={{
-              'aspect-ratio': '16/9',
-              'max-height': '100%',
-              /* Checkerboard signals transparency — same as OBS transparent canvas */
-              'background-color': '#0d0d0d',
-              'background-image':
-                'repeating-conic-gradient(#1a1a1a 0% 25%, #0d0d0d 0% 50%)',
-              'background-size': '20px 20px',
+              position: 'relative', width: '100%', 'max-width': '900px',
+              'aspect-ratio': '16 / 9',
+              'border-radius': 'var(--radius-xl)',
+              overflow: 'hidden',
+              border: '1px solid var(--border-strong)',
+              'box-shadow': 'var(--shadow-xl)',
             }}
           >
             <ChatBox    style={builderConfig.widgets.chat} />
@@ -113,8 +174,12 @@ const Builder: Component = () => {
 
       </div>
 
-      {/* Bottom: overlay link */}
-      <footer class="border-t border-gray-700 flex-shrink-0">
+      {/* Footer — overlay link */}
+      <footer style={{
+        'flex-shrink': '0',
+        'border-top': '1px solid var(--border-default)',
+        background: 'var(--bg-base)',
+      }}>
         <LinkOutput />
       </footer>
 
