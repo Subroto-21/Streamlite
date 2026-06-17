@@ -229,11 +229,29 @@ const Builder: Component = () => {
           {/* Overlay library */}
           <OverlayLibrary />
 
-          {/* Widget selector */}
-          <WidgetSelector selected={selectedWidget()} onSelect={setSelectedWidget} />
+          {/* Widget picker — compact 2-col grid, capped height, own scroll */}
+          <div class="sl-scroll" style={{
+            'flex-shrink': '0', 'max-height': '240px', 'overflow-y': 'auto',
+            'border-bottom': '1px solid var(--border-default)',
+          }}>
+            <WidgetSelector selected={selectedWidget()} onSelect={setSelectedWidget} />
+          </div>
 
-          {/* Style form */}
-          <div class="sl-scroll" style={{ flex: '1', 'overflow-y': 'auto' }}>
+          {/* Customize header — pinned between the two panels */}
+          <div style={{
+            'flex-shrink': '0', padding: '8px 14px 6px',
+            'border-bottom': '1px solid var(--border-default)',
+            background: 'var(--surface-1)',
+            display: 'flex', 'align-items': 'center', 'justify-content': 'space-between',
+          }}>
+            <span class="sl-eyebrow">Customize</span>
+            <span style={{ 'font-size': '11px', 'font-weight': '600', color: 'var(--violet-400)' }}>
+              {selectedWidget()}
+            </span>
+          </div>
+
+          {/* Style form — fills remaining space, own scroll */}
+          <div class="sl-scroll" style={{ flex: '1', 'min-height': '0', 'overflow-y': 'auto' }}>
             <WidgetStyleForm widgetKey={selectedWidget()} />
           </div>
 
