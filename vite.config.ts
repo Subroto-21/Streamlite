@@ -10,6 +10,7 @@ export default defineConfig({
       input: {
         builder: resolve(__dirname, 'index.html'),
         overlay: resolve(__dirname, 'overlay.html'),
+        landing: resolve(__dirname, 'landing.html'),
       },
     },
   },

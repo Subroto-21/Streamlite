@@ -134,16 +134,16 @@ const Builder: Component = () => {
 
         {/* Preview canvas */}
         <main style={{
-          flex: '1', display: 'flex', 'flex-direction': 'column',
-          'align-items': 'center', 'justify-content': 'center',
-          padding: '24px', background: 'var(--bg-canvas)',
+          flex: '1', 'min-width': '0',
+          display: 'flex', 'flex-direction': 'column',
+          background: 'var(--bg-canvas)',
           'background-image': 'var(--grad-canvas-glow)',
           overflow: 'hidden',
         }}>
+          {/* Top bar */}
           <div style={{
-            width: '100%', 'max-width': '900px',
             display: 'flex', 'align-items': 'center', 'justify-content': 'space-between',
-            'margin-bottom': '10px',
+            padding: '10px 20px 6px', 'flex-shrink': '0',
           }}>
             <span class="sl-eyebrow">Preview · 1920 × 1080</span>
             <span style={{
@@ -154,21 +154,31 @@ const Builder: Component = () => {
               Transparent canvas (OBS)
             </span>
           </div>
-          <div
-            class="sl-checkerboard"
-            style={{
-              position: 'relative', width: '100%', 'max-width': '900px',
-              'aspect-ratio': '16 / 9',
-              'border-radius': 'var(--radius-xl)',
-              overflow: 'hidden',
-              border: '1px solid var(--border-strong)',
-              'box-shadow': 'var(--shadow-xl)',
-            }}
-          >
-            <ChatBox    style={builderConfig.widgets.chat} />
-            <AlertBox   style={builderConfig.widgets.alert} />
-            <FollowerGoal style={builderConfig.widgets.followerGoal} />
-            <ViewerCount  style={builderConfig.widgets.viewerCount} />
+
+          {/* Canvas wrapper — fills remaining space, constrains by both width and height */}
+          <div style={{
+            flex: '1', 'min-height': '0',
+            display: 'flex', 'align-items': 'center', 'justify-content': 'center',
+            padding: '4px 20px 16px',
+          }}>
+            <div
+              class="sl-checkerboard"
+              style={{
+                position: 'relative',
+                'aspect-ratio': '16 / 9',
+                width: '100%',
+                'max-height': '100%',
+                'border-radius': 'var(--radius-xl)',
+                overflow: 'hidden',
+                border: '1px solid var(--border-strong)',
+                'box-shadow': 'var(--shadow-xl)',
+              }}
+            >
+              <ChatBox    style={builderConfig.widgets.chat} />
+              <AlertBox   style={builderConfig.widgets.alert} />
+              <FollowerGoal style={builderConfig.widgets.followerGoal} />
+              <ViewerCount  style={builderConfig.widgets.viewerCount} />
+            </div>
           </div>
         </main>
 
