@@ -2,6 +2,8 @@ import { type Component, onCleanup, onMount } from 'solid-js'
 import { config, setConfig } from './store/configStore'
 import { createChatAdapter } from '../shared/adapters'
 import { addAlert, addMessage, alertStore, messageStore } from '../shared/messageStore'
+import { setHasReceivedCount, setViewerCount } from '../shared/viewerCountStore'
+import { setFollowerCount, setHasFollowerCount } from '../shared/followerCountStore'
 import { applyConfigPatch } from '../shared/applyConfigPatch'
 import { parseOverlayCommand } from '../shared/commandParser'
 import { buildOverlayUrl, DEFAULT_CONFIG } from '../shared/stateEncoder'
@@ -35,6 +37,16 @@ const Overlay: Component = () => {
   adapter.onAlert(alert => {
     console.log('[Streamlite] alert:', JSON.stringify(alert, null, 2))
     addAlert(alert)
+  })
+
+  adapter.onViewerCountUpdate(({ count }) => {
+    setViewerCount(count)
+    setHasReceivedCount(true)
+  })
+
+  adapter.onFollowerCountUpdate((count) => {
+    setFollowerCount(count)
+    setHasFollowerCount(true)
   })
 
   onMount(() => {

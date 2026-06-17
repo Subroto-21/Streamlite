@@ -51,6 +51,32 @@ export const DEFAULT_WIDGET_STYLE: WidgetStyle = {
 
 // ── Runtime-only types (never serialised) ─────────────────────────────────
 
+export type ChatBadge =
+  | 'broadcaster' | 'moderator' | 'staff' | 'verified' | 'sidekick'
+  | 'founder' | 'og' | 'vip' | 'subscriber'
+  | 'subgifter' | 'subgifter25' | 'subgifter50' | 'subgifter100'
+
+// Highest priority first — used for both display order and primaryRole derivation
+export const BADGE_PRIORITY: ChatBadge[] = [
+  'broadcaster', 'moderator', 'staff', 'founder', 'og', 'vip',
+  'subgifter100', 'subgifter50', 'subgifter25', 'subgifter',
+  'subscriber', 'verified', 'sidekick',
+]
+
+export interface ReplyContext {
+  parentId: string
+  username: string
+  content: string   // raw Kick content string — may contain emote tokens
+}
+
+// Ready-to-render badge — carries the actual image URL resolved at parse time,
+// so the component never needs to look up CDN paths itself.
+export interface MessageBadge {
+  type: string      // raw badge name ('subscriber', 'level', 'moderator', …)
+  imageUrl: string  // actual URL: from payload image_url, or BADGE_META fallback
+  label: string     // alt/title text
+}
+
 export interface ChatMessage {
   id: string
   platform: 'kick' | 'twitch' | 'youtube'
@@ -58,7 +84,9 @@ export interface ChatMessage {
   color?: string
   message: string
   timestamp: number
-  badges?: string[]
+  badges: MessageBadge[]           // sorted by Kick's sort_order; empty array when none
+  primaryRole: ChatBadge | 'user'  // highest-priority role badge, for name-colour styling
+  replyTo?: ReplyContext
 }
 
 export interface AlertEvent {
@@ -72,10 +100,17 @@ export interface AlertEvent {
   timestamp: number
 }
 
+export interface ViewerCountUpdate {
+  count: number
+  timestamp: number
+}
+
 export interface ChatAdapter {
   connect(channelIdentifier: string): void
   disconnect(): void
   onMessage(callback: (msg: ChatMessage) => void): void
   onAlert(callback: (alert: AlertEvent) => void): void
+  onViewerCountUpdate(callback: (update: ViewerCountUpdate) => void): void
+  onFollowerCountUpdate(callback: (count: number) => void): void
   onStatusChange(callback: (status: 'connected' | 'disconnected' | 'reconnecting') => void): void
 }

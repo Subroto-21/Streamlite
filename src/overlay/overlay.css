@@ -12,6 +12,8 @@ body {
   overflow: hidden;
   margin: 0;
   padding: 0;
+  /* Emoji fallback chain: CEF may not load color emoji without this */
+  font-family: var(--font-family, 'Inter'), 'Segoe UI Emoji', 'Noto Color Emoji', 'Apple Color Emoji', sans-serif;
 }
 
 /* ── Widget entry animations ─────────────────────────────────────────────── */

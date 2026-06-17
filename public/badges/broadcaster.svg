@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <rect width="16" height="16" rx="3" fill="#22c55e"/>
+  <!-- Camera body -->
+  <rect x="2" y="5.5" width="8" height="5" rx="1" fill="white"/>
+  <!-- Lens -->
+  <circle cx="6" cy="8" r="1.5" fill="#22c55e"/>
+  <circle cx="6" cy="8" r=".6" fill="white"/>
+  <!-- Viewfinder -->
+  <path d="M10 6.8l3.2-1.5v5.4L10 9.2V6.8z" fill="white"/>
+</svg>
