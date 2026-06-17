@@ -28,6 +28,8 @@ export interface LayoutConfig {
     alert: WidgetStyle
     followerGoal: WidgetStyle & { goalTarget: number; goalLabel: string }
     viewerCount: WidgetStyle
+    clock: WidgetStyle & { format: '12h' | '24h'; showSeconds: boolean }
+    recentEvents: WidgetStyle & { maxEvents: number }
   }
   sig?: string
 }

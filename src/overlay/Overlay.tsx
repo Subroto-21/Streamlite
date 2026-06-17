@@ -11,6 +11,8 @@ import ChatBox from './components/ChatBox'
 import AlertBox from './components/AlertBox'
 import FollowerGoal from './components/FollowerGoal'
 import ViewerCount from './components/ViewerCount'
+import ClockWidget from './components/ClockWidget'
+import RecentEvents from './components/RecentEvents'
 
 const Overlay: Component = () => {
   const adapter = createChatAdapter('kick')
@@ -91,6 +93,8 @@ const Overlay: Component = () => {
       <AlertBox style={config.widgets.alert} />
       <FollowerGoal style={config.widgets.followerGoal} />
       <ViewerCount style={config.widgets.viewerCount} />
+      <ClockWidget style={config.widgets.clock} />
+      <RecentEvents style={config.widgets.recentEvents} />
     </div>
   )
 }

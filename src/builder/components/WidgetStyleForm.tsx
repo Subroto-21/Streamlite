@@ -183,6 +183,51 @@ const WidgetStyleForm: Component<Props> = (props) => {
         />
       </Show>
 
+      <Show when={props.widgetKey === 'clock'}>
+        <SectionLabel>Clock</SectionLabel>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Format</span>
+          <select
+            style={selectStyle}
+            value={builderConfig.widgets.clock.format}
+            onChange={(e) => applyConfigPatch(setBuilderConfig, { clock: { format: e.currentTarget.value as '12h' | '24h' } })}
+          >
+            <option value="24h">24-hour (14:30)</option>
+            <option value="12h">12-hour (2:30 PM)</option>
+          </select>
+        </div>
+        <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '10px' }}>
+          <span style={{ 'font-size': '12px', color: 'var(--text-secondary)' }}>Show seconds</span>
+          <button
+            onClick={() => applyConfigPatch(setBuilderConfig, { clock: { showSeconds: !builderConfig.widgets.clock.showSeconds } })}
+            style={{
+              width: '32px', height: '18px', 'border-radius': 'var(--radius-pill)',
+              border: 'none', cursor: 'pointer', position: 'relative', padding: '0',
+              background: builderConfig.widgets.clock.showSeconds ? 'var(--green-500)' : 'var(--surface-4)',
+              transition: 'background var(--dur-base)',
+            }}
+          >
+            <span style={{
+              position: 'absolute', top: '2px',
+              left: builderConfig.widgets.clock.showSeconds ? 'calc(100% - 16px)' : '2px',
+              width: '14px', height: '14px', 'border-radius': '50%', background: '#fff',
+              transition: 'left var(--dur-base) var(--ease-spring)',
+              'box-shadow': '0 1px 3px rgba(0,0,0,0.4)',
+            }} />
+          </button>
+        </div>
+      </Show>
+
+      <Show when={props.widgetKey === 'recentEvents'}>
+        <SectionLabel>Events</SectionLabel>
+        <SliderField
+          label="Max events shown"
+          value={builderConfig.widgets.recentEvents.maxEvents}
+          min={1} max={10} step={1}
+          onChange={(v) => applyConfigPatch(setBuilderConfig, { recentEvents: { maxEvents: v } })}
+        />
+      </Show>
+
     </div>
   )
 }

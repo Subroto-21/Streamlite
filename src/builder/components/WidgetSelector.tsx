@@ -8,13 +8,17 @@ const WIDGET_ICONS: Record<string, string> = {
   alert: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>`,
   followerGoal: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>`,
   viewerCount: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7"/><circle cx="12" cy="12" r="3"/></svg>`,
+  clock: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+  recentEvents: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>`,
 }
 
 const WIDGETS: Array<{ key: keyof LayoutConfig['widgets']; label: string; desc: string }> = [
-  { key: 'chat',         label: 'Chat',          desc: 'Live messages' },
-  { key: 'alert',        label: 'Alerts',         desc: 'Follows & subs' },
-  { key: 'followerGoal', label: 'Follower Goal',  desc: 'Progress bar' },
-  { key: 'viewerCount',  label: 'Viewer Count',   desc: 'Live audience' },
+  { key: 'chat',         label: 'Chat',           desc: 'Live messages' },
+  { key: 'alert',        label: 'Alerts',          desc: 'Follows & subs' },
+  { key: 'followerGoal', label: 'Follower Goal',   desc: 'Progress bar' },
+  { key: 'viewerCount',  label: 'Viewer Count',    desc: 'Live audience' },
+  { key: 'clock',        label: 'Clock',           desc: 'Live time' },
+  { key: 'recentEvents', label: 'Recent Events',   desc: 'Last subs & gifts' },
 ]
 
 interface Props {

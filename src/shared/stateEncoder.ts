@@ -28,6 +28,21 @@ export const DEFAULT_CONFIG: LayoutConfig = {
       ...DEFAULT_WIDGET_STYLE,
       x: 88, y: 2, width: 10, height: 6,
     },
+    clock: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 75, y: 2, width: 12, height: 6,
+      accentColor: '#863bff',
+      format: '24h',
+      showSeconds: false,
+    },
+    recentEvents: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 75, y: 78, width: 23, height: 20,
+      accentColor: '#863bff',
+      maxEvents: 5,
+    },
   },
 }
 

@@ -1,8 +1,10 @@
-import { Show, createEffect, createSignal, onCleanup, type Component } from 'solid-js'
+import { Show, For, createEffect, createSignal, onCleanup, type Component } from 'solid-js'
 import type { LayoutConfig } from '../shared/types'
-import { builderConfig, setKickChannelSlug } from './store/builderConfigStore'
+import { builderConfig, setBuilderConfig, setKickChannelSlug } from './store/builderConfigStore'
 import { createChatAdapter } from '../shared/adapters'
 import { addAlert, addMessage } from '../shared/messageStore'
+import { savedOverlays, saveOverlay, deleteOverlay } from './store/overlayLibrary'
+import { unwrap } from 'solid-js/store'
 import WidgetSelector from './components/WidgetSelector'
 import WidgetStyleForm from './components/WidgetStyleForm'
 import LinkOutput from './components/LinkOutput'
@@ -10,6 +12,101 @@ import ChatBox from '../overlay/components/ChatBox'
 import AlertBox from '../overlay/components/AlertBox'
 import FollowerGoal from '../overlay/components/FollowerGoal'
 import ViewerCount from '../overlay/components/ViewerCount'
+import ClockWidget from '../overlay/components/ClockWidget'
+import RecentEvents from '../overlay/components/RecentEvents'
+
+// ── Overlay library panel ─────────────────────────────────────────────────
+
+function loadConfig(config: LayoutConfig): void {
+  setBuilderConfig(() => structuredClone(config))
+}
+
+function OverlayLibrary() {
+  const [name, setName] = createSignal('My Overlay')
+  const [saved, setSaved] = createSignal(false)
+
+  const handleSave = () => {
+    saveOverlay(name(), unwrap(builderConfig) as LayoutConfig)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1500)
+  }
+
+  return (
+    <div style={{ 'border-bottom': '1px solid var(--border-default)' }}>
+      {/* Save row */}
+      <div style={{ padding: '10px 14px 8px' }}>
+        <span class="sl-eyebrow" style={{ display: 'block', 'margin-bottom': '8px' }}>Overlays</span>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <input
+            type="text"
+            value={name()}
+            onInput={(e) => setName(e.currentTarget.value)}
+            placeholder="Overlay name"
+            style={{
+              flex: '1', 'min-width': '0', background: 'var(--surface-2)',
+              border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)',
+              padding: '5px 9px', 'font-size': '12px', color: 'var(--text-primary)',
+              outline: 'none',
+            }}
+          />
+          <button
+            onClick={handleSave}
+            style={{
+              'flex-shrink': '0', padding: '5px 12px',
+              'border-radius': 'var(--radius-md)', border: 'none',
+              cursor: 'pointer', 'font-size': '12px', 'font-weight': '600',
+              background: saved() ? 'var(--green-600)' : 'var(--grad-brand)',
+              color: '#fff', transition: 'background var(--dur-fast)',
+            }}
+          >{saved() ? '✓ Saved' : 'Save'}</button>
+        </div>
+      </div>
+
+      {/* Saved list */}
+      <Show when={savedOverlays().length > 0}>
+        <div class="sl-scroll" style={{ 'max-height': '130px', 'overflow-y': 'auto', padding: '0 14px 10px' }}>
+          <For each={savedOverlays()}>
+            {(overlay) => (
+              <div style={{
+                display: 'flex', 'align-items': 'center', gap: '6px',
+                padding: '5px 8px', 'border-radius': 'var(--radius-md)',
+                'margin-bottom': '2px',
+                background: 'var(--surface-2)', border: '1px solid var(--border-default)',
+              }}>
+                <span style={{
+                  flex: '1', 'min-width': '0', 'font-size': '12px',
+                  color: 'var(--text-secondary)', overflow: 'hidden',
+                  'text-overflow': 'ellipsis', 'white-space': 'nowrap',
+                }}>{overlay.name}</span>
+                <button
+                  onClick={() => { loadConfig(overlay.config); setName(overlay.name) }}
+                  style={{
+                    'flex-shrink': '0', padding: '3px 8px',
+                    'border-radius': 'var(--radius-sm)', border: '1px solid var(--border-violet)',
+                    cursor: 'pointer', 'font-size': '11px', 'font-weight': '600',
+                    background: 'rgba(134,59,255,0.12)', color: 'var(--violet-300)',
+                  }}
+                >Load</button>
+                <button
+                  onClick={() => deleteOverlay(overlay.id)}
+                  style={{
+                    'flex-shrink': '0', padding: '3px 7px',
+                    'border-radius': 'var(--radius-sm)', border: '1px solid var(--border-default)',
+                    cursor: 'pointer', 'font-size': '11px',
+                    background: 'transparent', color: 'var(--text-muted)',
+                  }}
+                  title="Delete"
+                >✕</button>
+              </div>
+            )}
+          </For>
+        </div>
+      </Show>
+    </div>
+  )
+}
+
+// ── Builder ───────────────────────────────────────────────────────────────
 
 const Builder: Component = () => {
   const [selectedWidget, setSelectedWidget] = createSignal<keyof LayoutConfig['widgets']>('chat')
@@ -122,6 +219,9 @@ const Builder: Component = () => {
             </div>
           </div>
 
+          {/* Overlay library */}
+          <OverlayLibrary />
+
           {/* Widget selector */}
           <WidgetSelector selected={selectedWidget()} onSelect={setSelectedWidget} />
 
@@ -174,10 +274,12 @@ const Builder: Component = () => {
                 'box-shadow': 'var(--shadow-xl)',
               }}
             >
-              <ChatBox    style={builderConfig.widgets.chat} />
-              <AlertBox   style={builderConfig.widgets.alert} />
+              <ChatBox      style={builderConfig.widgets.chat} />
+              <AlertBox     style={builderConfig.widgets.alert} />
               <FollowerGoal style={builderConfig.widgets.followerGoal} />
               <ViewerCount  style={builderConfig.widgets.viewerCount} />
+              <ClockWidget  style={builderConfig.widgets.clock} />
+              <RecentEvents style={builderConfig.widgets.recentEvents} />
             </div>
           </div>
         </main>
