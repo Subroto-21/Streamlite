@@ -4,6 +4,7 @@ import { createChatAdapter } from '../shared/adapters'
 import { addAlert, addMessage, alertStore, messageStore } from '../shared/messageStore'
 import { setHasReceivedCount, setViewerCount } from '../shared/viewerCountStore'
 import { setFollowerCount, setHasFollowerCount } from '../shared/followerCountStore'
+import { setSubCount, setHasSubCount } from '../shared/subCountStore'
 import { applyConfigPatch } from '../shared/applyConfigPatch'
 import { parseOverlayCommand } from '../shared/commandParser'
 import { buildOverlayUrl, DEFAULT_CONFIG } from '../shared/stateEncoder'
@@ -13,6 +14,13 @@ import FollowerGoal from './components/FollowerGoal'
 import ViewerCount from './components/ViewerCount'
 import ClockWidget from './components/ClockWidget'
 import RecentEvents from './components/RecentEvents'
+import SubCount from './components/SubCount'
+import CountdownTimer from './components/CountdownTimer'
+import Ticker from './components/Ticker'
+import TodoList from './components/TodoList'
+import QRCode from './components/QRCode'
+import NowPlaying from './components/NowPlaying'
+import DateTime from './components/DateTime'
 
 const Overlay: Component = () => {
   const adapter = createChatAdapter('kick')
@@ -49,6 +57,11 @@ const Overlay: Component = () => {
   adapter.onFollowerCountUpdate((count) => {
     setFollowerCount(count)
     setHasFollowerCount(true)
+  })
+
+  adapter.onSubCountUpdate?.((count) => {
+    setSubCount(count)
+    setHasSubCount(true)
   })
 
   onMount(() => {
@@ -95,6 +108,13 @@ const Overlay: Component = () => {
       <ViewerCount style={config.widgets.viewerCount} />
       <ClockWidget style={config.widgets.clock} />
       <RecentEvents style={config.widgets.recentEvents} />
+      <SubCount style={config.widgets.subCount} />
+      <CountdownTimer style={config.widgets.countdown} />
+      <Ticker style={config.widgets.ticker} />
+      <TodoList style={config.widgets.todoList} />
+      <QRCode style={config.widgets.qrCode} />
+      <NowPlaying style={config.widgets.nowPlaying} />
+      <DateTime style={config.widgets.dateTime} />
     </div>
   )
 }

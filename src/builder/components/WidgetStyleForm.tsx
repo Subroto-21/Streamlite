@@ -1,5 +1,5 @@
-import { Show, type Component } from 'solid-js'
-import type { LayoutConfig, WidgetStyle } from '../../shared/types'
+import { Show, For, createSignal, type Component } from 'solid-js'
+import type { LayoutConfig, WidgetStyle, TodoItem } from '../../shared/types'
 import { builderConfig, setBuilderConfig } from '../store/builderConfigStore'
 import { applyConfigPatch } from '../../shared/applyConfigPatch'
 
@@ -226,6 +226,212 @@ const WidgetStyleForm: Component<Props> = (props) => {
           min={1} max={10} step={1}
           onChange={(v) => applyConfigPatch(setBuilderConfig, { recentEvents: { maxEvents: v } })}
         />
+      </Show>
+
+      <Show when={props.widgetKey === 'countdown'}>
+        <SectionLabel>Countdown</SectionLabel>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Label</span>
+          <input
+            type="text"
+            style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
+            value={builderConfig.widgets.countdown.label}
+            onInput={(e) => applyConfigPatch(setBuilderConfig, { countdown: { label: e.currentTarget.value } })}
+          />
+        </div>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Target date & time</span>
+          <input
+            type="datetime-local"
+            style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none', 'color-scheme': 'dark' }}
+            value={builderConfig.widgets.countdown.targetDate}
+            onChange={(e) => applyConfigPatch(setBuilderConfig, { countdown: { targetDate: e.currentTarget.value } })}
+          />
+        </div>
+        <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '10px' }}>
+          <span style={{ 'font-size': '12px', color: 'var(--text-secondary)' }}>Show days</span>
+          <button
+            onClick={() => applyConfigPatch(setBuilderConfig, { countdown: { showDays: !builderConfig.widgets.countdown.showDays } })}
+            style={{ width: '32px', height: '18px', 'border-radius': 'var(--radius-pill)', border: 'none', cursor: 'pointer', position: 'relative', padding: '0', background: builderConfig.widgets.countdown.showDays ? 'var(--green-500)' : 'var(--surface-4)', transition: 'background var(--dur-base)' }}
+          >
+            <span style={{ position: 'absolute', top: '2px', left: builderConfig.widgets.countdown.showDays ? 'calc(100% - 16px)' : '2px', width: '14px', height: '14px', 'border-radius': '50%', background: '#fff', transition: 'left var(--dur-base) var(--ease-spring)', 'box-shadow': '0 1px 3px rgba(0,0,0,0.4)' }} />
+          </button>
+        </div>
+      </Show>
+
+      <Show when={props.widgetKey === 'ticker'}>
+        <SectionLabel>Ticker</SectionLabel>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Messages (one per line)</span>
+          <textarea
+            style={{ width: '100%', 'min-height': '80px', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none', resize: 'vertical', 'box-sizing': 'border-box', 'font-family': 'var(--font-sans)' }}
+            value={builderConfig.widgets.ticker.items.join('\n')}
+            onInput={(e) => {
+              const lines = e.currentTarget.value.split('\n').filter(l => l.trim())
+              applyConfigPatch(setBuilderConfig, { ticker: { items: lines } })
+            }}
+          />
+        </div>
+        <SliderField
+          label="Scroll speed"
+          value={builderConfig.widgets.ticker.speed}
+          min={10} max={200} step={5} unit="px/s"
+          onChange={(v) => applyConfigPatch(setBuilderConfig, { ticker: { speed: v } })}
+        />
+      </Show>
+
+      <Show when={props.widgetKey === 'todoList'}>
+        <SectionLabel>Goals / To-Do</SectionLabel>
+        {(() => {
+          const [newItem, setNewItem] = createSignal('')
+          const addItem = () => {
+            const text = newItem().trim()
+            if (!text) return
+            const items: TodoItem[] = [...builderConfig.widgets.todoList.items, { id: crypto.randomUUID(), text, done: false }]
+            applyConfigPatch(setBuilderConfig, { todoList: { items } })
+            setNewItem('')
+          }
+          return (
+            <>
+              <div style={{ 'margin-bottom': '10px' }}>
+                <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Title</span>
+                <input
+                  type="text"
+                  style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
+                  value={builderConfig.widgets.todoList.title}
+                  onInput={(e) => applyConfigPatch(setBuilderConfig, { todoList: { title: e.currentTarget.value } })}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '6px', 'margin-bottom': '8px' }}>
+                <input
+                  type="text"
+                  placeholder="Add item…"
+                  style={{ flex: '1', 'min-width': '0', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '5px 9px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
+                  value={newItem()}
+                  onInput={(e) => setNewItem(e.currentTarget.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') addItem() }}
+                />
+                <button
+                  onClick={addItem}
+                  style={{ 'flex-shrink': '0', padding: '5px 10px', 'border-radius': 'var(--radius-md)', border: 'none', cursor: 'pointer', 'font-size': '12px', 'font-weight': '600', background: 'var(--grad-brand)', color: '#fff' }}
+                >+</button>
+              </div>
+              <div style={{ display: 'flex', 'flex-direction': 'column', gap: '4px' }}>
+                <For each={builderConfig.widgets.todoList.items}>
+                  {(item) => (
+                    <div style={{ display: 'flex', 'align-items': 'center', gap: '6px', padding: '5px 8px', 'border-radius': 'var(--radius-sm)', background: 'var(--surface-2)', border: '1px solid var(--border-default)' }}>
+                      <input
+                        type="checkbox"
+                        checked={item.done}
+                        style={{ 'accent-color': 'var(--violet-500)', 'flex-shrink': '0' }}
+                        onChange={() => {
+                          const items = builderConfig.widgets.todoList.items.map(i => i.id === item.id ? { ...i, done: !i.done } : i)
+                          applyConfigPatch(setBuilderConfig, { todoList: { items } })
+                        }}
+                      />
+                      <span style={{ flex: '1', 'min-width': '0', 'font-size': '12px', color: 'var(--text-secondary)', 'text-decoration': item.done ? 'line-through' : 'none', overflow: 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap' }}>{item.text}</span>
+                      <button
+                        onClick={() => {
+                          const items = builderConfig.widgets.todoList.items.filter(i => i.id !== item.id)
+                          applyConfigPatch(setBuilderConfig, { todoList: { items } })
+                        }}
+                        style={{ 'flex-shrink': '0', padding: '2px 6px', 'border-radius': 'var(--radius-sm)', border: '1px solid var(--border-default)', cursor: 'pointer', 'font-size': '11px', background: 'transparent', color: 'var(--text-muted)' }}
+                      >✕</button>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </>
+          )
+        })()}
+      </Show>
+
+      <Show when={props.widgetKey === 'qrCode'}>
+        <SectionLabel>QR Code</SectionLabel>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>URL to encode</span>
+          <input
+            type="url"
+            placeholder="https://kick.com/yourchannel"
+            style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
+            value={builderConfig.widgets.qrCode.qrUrl}
+            onInput={(e) => applyConfigPatch(setBuilderConfig, { qrCode: { qrUrl: e.currentTarget.value } })}
+          />
+        </div>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Caption (optional)</span>
+          <input
+            type="text"
+            placeholder="Scan to follow!"
+            style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
+            value={builderConfig.widgets.qrCode.label}
+            onInput={(e) => applyConfigPatch(setBuilderConfig, { qrCode: { label: e.currentTarget.value } })}
+          />
+        </div>
+      </Show>
+
+      <Show when={props.widgetKey === 'nowPlaying'}>
+        <SectionLabel>Now Playing (Last.fm)</SectionLabel>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Last.fm username</span>
+          <input
+            type="text"
+            placeholder="your_lastfm_user"
+            style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
+            value={builderConfig.widgets.nowPlaying.lastfmUser}
+            onInput={(e) => applyConfigPatch(setBuilderConfig, { nowPlaying: { lastfmUser: e.currentTarget.value } })}
+          />
+        </div>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Last.fm API key</span>
+          <input
+            type="text"
+            placeholder="Enter your API key"
+            style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none', 'font-family': 'var(--font-mono)' }}
+            value={builderConfig.widgets.nowPlaying.lastfmApiKey}
+            onInput={(e) => applyConfigPatch(setBuilderConfig, { nowPlaying: { lastfmApiKey: e.currentTarget.value } })}
+          />
+        </div>
+        <p style={{ 'font-size': '11px', color: 'var(--text-muted)', 'line-height': '1.5', margin: '0 0 10px' }}>
+          Get a free API key at last.fm/api — updates every 30s.
+        </p>
+      </Show>
+
+      <Show when={props.widgetKey === 'dateTime'}>
+        <SectionLabel>Date & Time</SectionLabel>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Date format</span>
+          <select
+            style={selectStyle}
+            value={builderConfig.widgets.dateTime.dateFormat}
+            onChange={(e) => applyConfigPatch(setBuilderConfig, { dateTime: { dateFormat: e.currentTarget.value } })}
+          >
+            <option value="short">Short (Mon, Jun 17)</option>
+            <option value="medium">Medium (Mon, Jun 17, 2026)</option>
+            <option value="long">Long (Monday, June 17, 2026)</option>
+          </select>
+        </div>
+        <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '10px' }}>
+          <span style={{ 'font-size': '12px', color: 'var(--text-secondary)' }}>Show weather</span>
+          <button
+            onClick={() => applyConfigPatch(setBuilderConfig, { dateTime: { showWeather: !builderConfig.widgets.dateTime.showWeather } })}
+            style={{ width: '32px', height: '18px', 'border-radius': 'var(--radius-pill)', border: 'none', cursor: 'pointer', position: 'relative', padding: '0', background: builderConfig.widgets.dateTime.showWeather ? 'var(--green-500)' : 'var(--surface-4)', transition: 'background var(--dur-base)' }}
+          >
+            <span style={{ position: 'absolute', top: '2px', left: builderConfig.widgets.dateTime.showWeather ? 'calc(100% - 16px)' : '2px', width: '14px', height: '14px', 'border-radius': '50%', background: '#fff', transition: 'left var(--dur-base) var(--ease-spring)', 'box-shadow': '0 1px 3px rgba(0,0,0,0.4)' }} />
+          </button>
+        </div>
+        <Show when={builderConfig.widgets.dateTime.showWeather}>
+          <div style={{ 'margin-bottom': '10px' }}>
+            <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>City (leave empty for auto-detect)</span>
+            <input
+              type="text"
+              placeholder="London, New York, Tokyo…"
+              style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
+              value={builderConfig.widgets.dateTime.city}
+              onInput={(e) => applyConfigPatch(setBuilderConfig, { dateTime: { city: e.currentTarget.value } })}
+            />
+          </div>
+        </Show>
       </Show>
 
     </div>

@@ -52,6 +52,7 @@ interface KickChannelResponse {
   }
   followers_count?: number
   viewer_count?: number
+  subscribers_count?: number
   livestream?: {
     viewer_count?: number
   }
@@ -129,6 +130,7 @@ export class KickChatAdapter implements ChatAdapter {
   private subscriberBadgeTiers: SubscriberBadgeTier[] = []
   private viewerCountCallback: ((update: ViewerCountUpdate) => void) | null = null
   private followerCountCallback: ((count: number) => void) | null = null
+  private subCountCallback: ((count: number) => void) | null = null
   private statusCallback: ((status: 'connected' | 'disconnected' | 'reconnecting') => void) | null = null
   private pollTimer: ReturnType<typeof setInterval> | null = null
   private channelSlug: string | null = null
@@ -147,6 +149,10 @@ export class KickChatAdapter implements ChatAdapter {
 
   onFollowerCountUpdate(callback: (count: number) => void): void {
     this.followerCountCallback = callback
+  }
+
+  onSubCountUpdate(callback: (count: number) => void): void {
+    this.subCountCallback = callback
   }
 
   onStatusChange(callback: (status: 'connected' | 'disconnected' | 'reconnecting') => void): void {
@@ -201,6 +207,9 @@ export class KickChatAdapter implements ChatAdapter {
       if (typeof data.followers_count === 'number') {
         this.followerCountCallback?.(data.followers_count)
       }
+      if (typeof data.subscribers_count === 'number') {
+        this.subCountCallback?.(data.subscribers_count)
+      }
     } catch {
       // Network error — non-critical, next poll will retry
     }
@@ -208,7 +217,7 @@ export class KickChatAdapter implements ChatAdapter {
 
   private async _connect(channelSlug: string): Promise<void> {
     this.channelSlug = channelSlug
-    const { chatroomId, channelId, initialViewerCount, initialFollowerCount, subscriberBadgeTiers } = await resolveChannelIds(channelSlug)
+    const { chatroomId, channelId, initialViewerCount, initialFollowerCount, initialSubCount, subscriberBadgeTiers } = await resolveChannelIds(channelSlug)
     this.subscriberBadgeTiers = subscriberBadgeTiers
     console.log(`[KickChatAdapter] resolved ${channelSlug} → chatroomId=${chatroomId}, channelId=${channelId}`)
 
@@ -220,6 +229,9 @@ export class KickChatAdapter implements ChatAdapter {
     }
     if (typeof initialFollowerCount === 'number') {
       this.followerCountCallback?.(initialFollowerCount)
+    }
+    if (typeof initialSubCount === 'number') {
+      this.subCountCallback?.(initialSubCount)
     }
     this.pollTimer = setInterval(() => { void this.pollChannelStats() }, 60_000)
 
@@ -405,6 +417,7 @@ async function resolveChannelIds(slug: string): Promise<{
   channelId: number
   initialViewerCount?: number
   initialFollowerCount?: number
+  initialSubCount?: number
   subscriberBadgeTiers: SubscriberBadgeTier[]
 }> {
   const res = await fetch(`https://kick.com/api/v2/channels/${slug}`)
@@ -420,6 +433,7 @@ async function resolveChannelIds(slug: string): Promise<{
     channelId: data.id,
     initialViewerCount: data.livestream?.viewer_count ?? data.viewer_count,
     initialFollowerCount: data.followers_count,
+    initialSubCount: data.subscribers_count,
     subscriberBadgeTiers,
   }
 }

@@ -43,6 +43,62 @@ export const DEFAULT_CONFIG: LayoutConfig = {
       accentColor: '#863bff',
       maxEvents: 5,
     },
+    subCount: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 88, y: 10, width: 10, height: 6,
+      accentColor: '#863bff',
+    },
+    countdown: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 30, y: 40, width: 20, height: 12,
+      accentColor: '#863bff',
+      targetDate: '',
+      label: 'Countdown',
+      showDays: true,
+    },
+    ticker: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 0, y: 92, width: 100, height: 6,
+      accentColor: '#863bff',
+      items: ['Welcome to the stream!', 'Follow for more content!'],
+      speed: 60,
+    },
+    todoList: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 2, y: 10, width: 20, height: 30,
+      accentColor: '#863bff',
+      title: 'Goals',
+      items: [],
+    },
+    qrCode: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 85, y: 60, width: 13, height: 22,
+      accentColor: '#863bff',
+      qrUrl: 'https://kick.com',
+      label: '',
+    },
+    nowPlaying: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 2, y: 88, width: 30, height: 10,
+      accentColor: '#863bff',
+      lastfmApiKey: '',
+      lastfmUser: '',
+    },
+    dateTime: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 75, y: 10, width: 23, height: 8,
+      accentColor: '#863bff',
+      dateFormat: 'short',
+      showWeather: false,
+      city: '',
+    },
   },
 }
 
@@ -58,7 +114,14 @@ export function decompressState(str: string): LayoutConfig {
     if (!json) throw new Error('decompression returned empty string')
     const parsed = JSON.parse(json) as LayoutConfig
     if (parsed.v < CURRENT_VERSION) migrate(parsed)
-    return parsed
+    // Merge with defaults so old URLs without new widget keys still work.
+    // Widget-level spread ensures new keys (subCount, countdown, etc.) get defaults
+    // while existing widgets keep their saved values.
+    return {
+      ...DEFAULT_CONFIG,
+      ...parsed,
+      widgets: { ...DEFAULT_CONFIG.widgets, ...parsed.widgets },
+    }
   } catch (err) {
     console.error('[Streamlite] Failed to decompress state — using default:', err)
     return structuredClone(DEFAULT_CONFIG)

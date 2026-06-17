@@ -18,6 +18,12 @@ export interface WidgetStyle {
 
 // ── Root serialised config — single source of truth ───────────────────────
 
+export interface TodoItem {
+  id: string
+  text: string
+  done: boolean
+}
+
 export interface LayoutConfig {
   v: number
   kickChannelSlug?: string
@@ -30,6 +36,13 @@ export interface LayoutConfig {
     viewerCount: WidgetStyle
     clock: WidgetStyle & { format: '12h' | '24h'; showSeconds: boolean }
     recentEvents: WidgetStyle & { maxEvents: number }
+    subCount: WidgetStyle
+    countdown: WidgetStyle & { targetDate: string; label: string; showDays: boolean }
+    ticker: WidgetStyle & { items: string[]; speed: number }
+    todoList: WidgetStyle & { title: string; items: TodoItem[] }
+    qrCode: WidgetStyle & { qrUrl: string; label: string }
+    nowPlaying: WidgetStyle & { lastfmApiKey: string; lastfmUser: string }
+    dateTime: WidgetStyle & { dateFormat: string; showWeather: boolean; city: string }
   }
   sig?: string
 }
@@ -114,5 +127,6 @@ export interface ChatAdapter {
   onAlert(callback: (alert: AlertEvent) => void): void
   onViewerCountUpdate(callback: (update: ViewerCountUpdate) => void): void
   onFollowerCountUpdate(callback: (count: number) => void): void
+  onSubCountUpdate?(callback: (count: number) => void): void
   onStatusChange(callback: (status: 'connected' | 'disconnected' | 'reconnecting') => void): void
 }

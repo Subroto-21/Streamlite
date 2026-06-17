@@ -14,6 +14,13 @@ import FollowerGoal from '../overlay/components/FollowerGoal'
 import ViewerCount from '../overlay/components/ViewerCount'
 import ClockWidget from '../overlay/components/ClockWidget'
 import RecentEvents from '../overlay/components/RecentEvents'
+import SubCount from '../overlay/components/SubCount'
+import CountdownTimer from '../overlay/components/CountdownTimer'
+import Ticker from '../overlay/components/Ticker'
+import TodoList from '../overlay/components/TodoList'
+import QRCode from '../overlay/components/QRCode'
+import NowPlaying from '../overlay/components/NowPlaying'
+import DateTime from '../overlay/components/DateTime'
 
 // ── Overlay library panel ─────────────────────────────────────────────────
 
@@ -280,6 +287,13 @@ const Builder: Component = () => {
               <ViewerCount  style={builderConfig.widgets.viewerCount} />
               <ClockWidget  style={builderConfig.widgets.clock} />
               <RecentEvents style={builderConfig.widgets.recentEvents} />
+              <SubCount     style={builderConfig.widgets.subCount} />
+              <CountdownTimer style={builderConfig.widgets.countdown} />
+              <Ticker       style={builderConfig.widgets.ticker} />
+              <TodoList     style={builderConfig.widgets.todoList} />
+              <QRCode       style={builderConfig.widgets.qrCode} />
+              <NowPlaying   style={builderConfig.widgets.nowPlaying} />
+              <DateTime     style={builderConfig.widgets.dateTime} />
             </div>
           </div>
         </main>
