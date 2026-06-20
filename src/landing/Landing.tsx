@@ -76,7 +76,7 @@ function Dynamic(p: { component: string; href?: string; onClick?: () => void; st
 // ── Nav ───────────────────────────────────────────────────────────────────
 
 function Nav() {
-  const links = ['Features', 'Widgets', 'Pricing', 'Docs']
+  const links = ['Features', 'Widgets', 'Docs']
   return (
     <nav style={{
       position: 'sticky', top: '0', 'z-index': '20',
@@ -336,84 +336,61 @@ function Features() {
   )
 }
 
-// ── Pricing ───────────────────────────────────────────────────────────────
+// ── Free banner ───────────────────────────────────────────────────────────
 
-const PLANS = [
-  {
-    name: 'Starter', price: '$0', sub: 'forever', featured: false,
-    feats: ['All 4 core widgets', 'Live drag-and-drop builder', 'One overlay link', 'Kick chat integration', 'Community support'],
-  },
-  {
-    name: 'Pro', price: '$9', sub: 'per month', featured: true,
-    feats: ['Everything in Starter', 'Unlimited saved overlays', 'Custom fonts & CSS', 'Twitch + YouTube alerts', 'Chat-command control', 'Priority support'],
-  },
-  {
-    name: 'Team', price: '$29', sub: 'per month', featured: false,
-    feats: ['Everything in Pro', 'Up to 5 channels', 'Shared brand presets', 'Role permissions', 'Analytics dashboard'],
-  },
+const FREE_FEATS = [
+  'All widgets, no limits',
+  'Live drag-and-drop builder',
+  'Unlimited overlay links',
+  'Kick chat & alerts',
+  'Spotify now playing',
+  'No account required',
 ]
 
-function Pricing() {
+function FreeBanner() {
   return (
-    <section id="pricing" style={{ 'max-width': '1200px', margin: '0 auto', padding: '24px 32px 80px' }}>
-      <div style={{ 'text-align': 'center', 'margin-bottom': '44px' }}>
-        <div class="sl-eyebrow" style={{ 'margin-bottom': '12px' }}>Pricing</div>
+    <section style={{ 'max-width': '780px', margin: '0 auto', padding: '24px 32px 80px' }}>
+      <div style={{
+        background: 'var(--grad-surface)', 'border-radius': 'var(--radius-2xl)',
+        border: '1px solid var(--border-violet)',
+        'box-shadow': 'var(--glow-violet)',
+        padding: '48px 40px', 'text-align': 'center',
+        'background-image': 'radial-gradient(80% 100% at 50% 0%, rgba(134,59,255,0.18) 0%, transparent 70%)',
+      }}>
+        <span style={{
+          display: 'inline-block', 'font-size': '12px', 'font-weight': '700',
+          color: 'var(--green-500)', background: 'rgba(83,252,24,0.1)',
+          border: '1px solid rgba(83,252,24,0.25)', 'border-radius': 'var(--radius-pill)',
+          padding: '4px 14px', 'letter-spacing': '0.06em', 'text-transform': 'uppercase',
+          'margin-bottom': '20px',
+        }}>100% free</span>
+
         <h2 style={{
-          'font-size': 'clamp(26px, 4vw, 40px)', 'font-weight': '700',
+          'font-size': 'clamp(26px, 4vw, 38px)', 'font-weight': '700',
           'letter-spacing': '-0.03em', color: 'var(--text-primary)',
-          'font-family': 'var(--font-display)',
-        }}>Start free. Upgrade when you blow up.</h2>
-      </div>
-      <div style={{ display: 'grid', 'grid-template-columns': 'repeat(3, 1fr)', gap: '16px', 'align-items': 'start' }}>
-        <For each={PLANS}>
-          {(plan) => (
-            <div style={{
-              background: 'var(--grad-surface)', 'border-radius': 'var(--radius-xl)',
-              border: plan.featured ? '1px solid var(--border-violet)' : '1px solid var(--border-default)',
-              padding: '28px',
-              'box-shadow': plan.featured ? 'var(--glow-violet)' : 'none',
-              transform: plan.featured ? 'scale(1.03)' : 'none',
-            }}>
-              <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '6px' }}>
-                <span style={{
-                  'font-family': 'var(--font-display)', 'font-size': '18px',
-                  'font-weight': '600', color: 'var(--text-primary)',
-                }}>{plan.name}</span>
-                {plan.featured && (
-                  <span style={{
-                    'font-size': '11px', 'font-weight': '600', color: 'var(--violet-300)',
-                    background: 'rgba(134,59,255,0.16)', padding: '3px 9px',
-                    'border-radius': 'var(--radius-pill)', border: '1px solid var(--border-violet)',
-                  }}>Most popular</span>
-                )}
+          'font-family': 'var(--font-display)', margin: '0 0 12px',
+        }}>Everything included, always.</h2>
+
+        <p style={{ 'font-size': '16px', color: 'var(--text-tertiary)', 'line-height': '1.55', margin: '0 0 32px' }}>
+          No trial period. No credit card. No hidden tier.<br />
+          Every feature ships free while we're in early access.
+        </p>
+
+        <div style={{
+          display: 'grid', 'grid-template-columns': '1fr 1fr', gap: '10px 32px',
+          'text-align': 'left', 'max-width': '440px', margin: '0 auto 32px',
+        }}>
+          <For each={FREE_FEATS}>
+            {(feat) => (
+              <div style={{ display: 'flex', 'align-items': 'center', gap: '9px', 'font-size': '14px', color: 'var(--text-secondary)' }}>
+                <span style={{ color: 'var(--green-500)', 'flex-shrink': '0' }}><IconCheck /></span>
+                {feat}
               </div>
-              <div style={{ display: 'flex', 'align-items': 'baseline', gap: '7px', margin: '16px 0 20px' }}>
-                <span style={{
-                  'font-family': 'var(--font-display)', 'font-size': '44px',
-                  'font-weight': '700', 'letter-spacing': '-0.03em', color: 'var(--text-primary)',
-                }}>{plan.price}</span>
-                <span style={{ 'font-size': '14px', color: 'var(--text-muted)' }}>{plan.sub}</span>
-              </div>
-              <Btn
-                variant={plan.featured ? 'primary' : 'secondary'}
-                href="/index.html"
-                fullWidth
-              >
-                {plan.featured ? 'Go Pro' : `Choose ${plan.name}`}
-              </Btn>
-              <div style={{ display: 'flex', 'flex-direction': 'column', gap: '11px', 'margin-top': '22px' }}>
-                <For each={plan.feats}>
-                  {(feat) => (
-                    <div style={{ display: 'flex', 'align-items': 'center', gap: '10px', 'font-size': '13.5px', color: 'var(--text-secondary)' }}>
-                      <span style={{ color: 'var(--green-500)', 'flex-shrink': '0' }}><IconCheck /></span>
-                      {feat}
-                    </div>
-                  )}
-                </For>
-              </div>
-            </div>
-          )}
-        </For>
+            )}
+          </For>
+        </div>
+
+        <Btn size="lg" href="/index.html" iconRight>Build your overlay free</Btn>
       </div>
     </section>
   )
@@ -523,7 +500,7 @@ const Landing: Component = () => {
       <Hero />
       <Stats />
       <Features />
-      <Pricing />
+      <FreeBanner />
       <Testimonial />
       <CTA />
       <Footer />
