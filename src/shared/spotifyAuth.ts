@@ -1,6 +1,8 @@
 // Set VITE_SPOTIFY_CLIENT_ID in your .env file once.
 // Users never see this — they just click "Connect Spotify".
-const CLIENT_ID   = import.meta.env.VITE_SPOTIFY_CLIENT_ID as string ?? ''
+const CLIENT_ID = (import.meta.env.VITE_SPOTIFY_CLIENT_ID as string | undefined) ?? ''
+
+export const clientIdConfigured = CLIENT_ID.length > 0
 const REDIRECT_URI = () => window.location.origin + '/'
 
 const KEYS = {

@@ -2,6 +2,7 @@ import { Show, For, createSignal, onCleanup, type Component } from 'solid-js'
 import type { LayoutConfig, WidgetStyle, TodoItem } from '../../shared/types'
 import { builderConfig, setBuilderConfig } from '../store/builderConfigStore'
 import { applyConfigPatch } from '../../shared/applyConfigPatch'
+import { clientIdConfigured } from '../../shared/spotifyAuth'
 
 // ── Sub-components ────────────────────────────────────────────────────────
 
@@ -368,7 +369,30 @@ const WidgetStyleForm: Component<Props> = (props) => {
           return (
             <>
               <SectionLabel>Spotify</SectionLabel>
-              <Show when={!connected()}>
+              <Show when={!clientIdConfigured}>
+                <div style={{
+                  background: 'rgba(255,180,0,0.08)', border: '1px solid rgba(255,180,0,0.3)',
+                  'border-radius': 'var(--radius-md)', padding: '10px 12px', 'margin-bottom': '8px',
+                }}>
+                  <p style={{ 'font-size': '12px', 'font-weight': '600', color: 'var(--warning)', margin: '0 0 6px' }}>
+                    VITE_SPOTIFY_CLIENT_ID not set
+                  </p>
+                  <p style={{ 'font-size': '11px', color: 'var(--text-muted)', margin: '0 0 8px', 'line-height': '1.5' }}>
+                    Create a <code style={{ 'font-family': 'var(--font-mono)', background: 'var(--surface-3)', padding: '1px 4px', 'border-radius': '3px' }}>.env</code> file in the project root:
+                  </p>
+                  <div style={{
+                    background: 'var(--surface-3)', 'border-radius': 'var(--radius-sm)',
+                    padding: '8px 10px', 'font-size': '11px', 'font-family': 'var(--font-mono)',
+                    color: 'var(--text-secondary)', 'user-select': 'all',
+                  }}>
+                    VITE_SPOTIFY_CLIENT_ID=your_client_id
+                  </div>
+                  <p style={{ 'font-size': '11px', color: 'var(--text-muted)', margin: '6px 0 0', 'line-height': '1.5' }}>
+                    Then restart the dev server.
+                  </p>
+                </div>
+              </Show>
+              <Show when={clientIdConfigured && !connected()}>
                 <button
                   onClick={() => { import('../../shared/spotifyAuth').then(m => { void m.connectSpotify() }) }}
                   style={{
