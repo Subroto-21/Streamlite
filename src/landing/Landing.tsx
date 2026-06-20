@@ -226,7 +226,7 @@ function Hero() {
         'font-size': '19px', color: 'var(--text-secondary)',
         'max-width': '600px', margin: '22px auto 0', 'line-height': '1.6',
       }}>
-        Drag in chat, alerts, goals and viewer counts. Tune them to your brand,
+        Pick your widgets, position them on a live 16:9 canvas, tune them to your brand,
         copy one link into your broadcaster, and go live. Free to start — no account required.
       </p>
 
@@ -245,7 +245,7 @@ function Hero() {
 // ── Features ──────────────────────────────────────────────────────────────
 
 const FEATURES = [
-  { title: 'Drag-and-drop builder',   desc: 'Position every widget on a live 16:9 canvas. What you see is exactly what your viewers get.', accent: '#863bff' },
+  { title: 'Live visual builder',      desc: 'Position every widget on a live 16:9 canvas using precise controls. What you see is exactly what your viewers get.', accent: '#863bff' },
   { title: 'Themeable to your brand', desc: 'Colors, fonts, opacity, corner radius and entrance animations — per widget, in real time.',   accent: '#4d7cff' },
   { title: 'One link, any broadcaster', desc: 'Copy a single overlay URL into OBS, Streamlabs or Twitch Studio as a browser source.',      accent: '#53fc18' },
   { title: 'Chat-command control',    desc: 'Show or hide widgets mid-stream with !overlay commands — no alt-tabbing away.',               accent: '#863bff' },
@@ -451,7 +451,7 @@ function Widgets() {
 
 const FREE_FEATS = [
   'All widgets, no limits',
-  'Live drag-and-drop builder',
+  'Live visual builder',
   'Unlimited overlay links',
   'Kick chat & alerts',
   'Spotify now playing',
