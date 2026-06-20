@@ -1,4 +1,4 @@
-import { Show, For, createEffect, createSignal, onCleanup, type Component } from 'solid-js'
+import { Show, For, createEffect, createSignal, onCleanup, onMount, type Component } from 'solid-js'
 import type { LayoutConfig } from '../shared/types'
 import { builderConfig, setBuilderConfig, setKickChannelSlug } from './store/builderConfigStore'
 import { createChatAdapter } from '../shared/adapters'
@@ -19,7 +19,8 @@ import CountdownTimer from '../overlay/components/CountdownTimer'
 import Ticker from '../overlay/components/Ticker'
 import TodoList from '../overlay/components/TodoList'
 import QRCode from '../overlay/components/QRCode'
-import NowPlaying from '../overlay/components/NowPlaying'
+import SpotifyWidget from '../overlay/components/SpotifyWidget'
+import { handleOAuthCallback } from '../shared/spotifyAuth'
 import DateTime from '../overlay/components/DateTime'
 
 // ── Overlay library panel ─────────────────────────────────────────────────
@@ -118,6 +119,12 @@ function OverlayLibrary() {
 const Builder: Component = () => {
   const [selectedWidget, setSelectedWidget] = createSignal<keyof LayoutConfig['widgets']>('chat')
   const [chatStatus, setChatStatus] = createSignal<'connected' | 'disconnected' | 'reconnecting' | ''>('')
+
+  // Handle Spotify OAuth popup callback — popup lands here with ?code=, exchanges
+  // it for tokens, messages the opener, then closes itself.
+  onMount(() => {
+    void handleOAuthCallback()
+  })
 
   createEffect(() => {
     const slug = builderConfig.kickChannelSlug
@@ -309,9 +316,9 @@ const Builder: Component = () => {
               <CountdownTimer style={builderConfig.widgets.countdown} />
               <Ticker       style={builderConfig.widgets.ticker} />
               <TodoList     style={builderConfig.widgets.todoList} />
-              <QRCode       style={builderConfig.widgets.qrCode} />
-              <NowPlaying   style={builderConfig.widgets.nowPlaying} />
-              <DateTime     style={builderConfig.widgets.dateTime} />
+              <QRCode         style={builderConfig.widgets.qrCode} />
+              <SpotifyWidget  style={builderConfig.widgets.spotify} />
+              <DateTime       style={builderConfig.widgets.dateTime} />
             </div>
           </div>
         </main>

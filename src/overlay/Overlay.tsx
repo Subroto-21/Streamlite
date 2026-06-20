@@ -19,7 +19,7 @@ import CountdownTimer from './components/CountdownTimer'
 import Ticker from './components/Ticker'
 import TodoList from './components/TodoList'
 import QRCode from './components/QRCode'
-import NowPlaying from './components/NowPlaying'
+import SpotifyWidget from './components/SpotifyWidget'
 import DateTime from './components/DateTime'
 
 const Overlay: Component = () => {
@@ -113,7 +113,7 @@ const Overlay: Component = () => {
       <Ticker style={config.widgets.ticker} />
       <TodoList style={config.widgets.todoList} />
       <QRCode style={config.widgets.qrCode} />
-      <NowPlaying style={config.widgets.nowPlaying} />
+      <SpotifyWidget style={config.widgets.spotify} />
       <DateTime style={config.widgets.dateTime} />
     </div>
   )

@@ -41,7 +41,7 @@ export interface LayoutConfig {
     ticker: WidgetStyle & { items: string[]; speed: number }
     todoList: WidgetStyle & { title: string; items: TodoItem[] }
     qrCode: WidgetStyle & { qrUrl: string; label: string }
-    nowPlaying: WidgetStyle & { lastfmApiKey: string; lastfmUser: string }
+    spotify: WidgetStyle
     dateTime: WidgetStyle & { dateFormat: string; showWeather: boolean; city: string }
   }
   sig?: string

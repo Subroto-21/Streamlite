@@ -1,4 +1,4 @@
-import { Show, For, createSignal, type Component } from 'solid-js'
+import { Show, For, createSignal, onCleanup, type Component } from 'solid-js'
 import type { LayoutConfig, WidgetStyle, TodoItem } from '../../shared/types'
 import { builderConfig, setBuilderConfig } from '../store/builderConfigStore'
 import { applyConfigPatch } from '../../shared/applyConfigPatch'
@@ -127,7 +127,7 @@ const WidgetStyleForm: Component<Props> = (props) => {
 
       <SectionLabel>Shape & Type</SectionLabel>
       <SliderField label="Corner radius" value={widget().borderRadius} min={0} max={40} unit="px" onChange={(v) => p('borderRadius', v)} />
-      <SliderField label="Font size"     value={widget().fontSize}     min={10} max={32} unit="px" onChange={(v) => p('fontSize', v)} />
+      <SliderField label="Font size"     value={widget().fontSize}     min={10} max={72} unit="px" onChange={(v) => p('fontSize', v)} />
 
       <div style={{ 'margin-bottom': '2px' }}>
         <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Font</span>
@@ -140,20 +140,6 @@ const WidgetStyleForm: Component<Props> = (props) => {
           <option value="roboto">Roboto</option>
           <option value="poppins">Poppins</option>
           <option value="mono">Mono</option>
-        </select>
-      </div>
-
-      <div>
-        <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Entrance animation</span>
-        <select
-          style={selectStyle}
-          value={widget().animation}
-          onChange={(e) => p('animation', e.currentTarget.value)}
-        >
-          <option value="none">None</option>
-          <option value="fade">Fade</option>
-          <option value="slide">Slide</option>
-          <option value="bounce">Bounce</option>
         </select>
       </div>
 
@@ -370,31 +356,56 @@ const WidgetStyleForm: Component<Props> = (props) => {
         </div>
       </Show>
 
-      <Show when={props.widgetKey === 'nowPlaying'}>
-        <SectionLabel>Now Playing (Last.fm)</SectionLabel>
-        <div style={{ 'margin-bottom': '10px' }}>
-          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Last.fm username</span>
-          <input
-            type="text"
-            placeholder="your_lastfm_user"
-            style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
-            value={builderConfig.widgets.nowPlaying.lastfmUser}
-            onInput={(e) => applyConfigPatch(setBuilderConfig, { nowPlaying: { lastfmUser: e.currentTarget.value } })}
-          />
-        </div>
-        <div style={{ 'margin-bottom': '10px' }}>
-          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Last.fm API key</span>
-          <input
-            type="text"
-            placeholder="Enter your API key"
-            style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none', 'font-family': 'var(--font-mono)' }}
-            value={builderConfig.widgets.nowPlaying.lastfmApiKey}
-            onInput={(e) => applyConfigPatch(setBuilderConfig, { nowPlaying: { lastfmApiKey: e.currentTarget.value } })}
-          />
-        </div>
-        <p style={{ 'font-size': '11px', color: 'var(--text-muted)', 'line-height': '1.5', margin: '0 0 10px' }}>
-          Get a free API key at last.fm/api — updates every 30s.
-        </p>
+      <Show when={props.widgetKey === 'spotify'}>
+        {(() => {
+          const [connected, setConnected] = createSignal(!!localStorage.getItem('sl_spotify_access_token'))
+          const onStorage = (e: StorageEvent) => {
+            if (e.key === 'sl_spotify_access_token') setConnected(!!e.newValue)
+          }
+          window.addEventListener('storage', onStorage)
+          onCleanup(() => window.removeEventListener('storage', onStorage))
+
+          return (
+            <>
+              <SectionLabel>Spotify</SectionLabel>
+              <Show when={!connected()}>
+                <button
+                  onClick={() => { import('../../shared/spotifyAuth').then(m => { void m.connectSpotify() }) }}
+                  style={{
+                    width: '100%', padding: '9px', 'border-radius': 'var(--radius-md)',
+                    border: 'none', cursor: 'pointer', 'font-size': '13px', 'font-weight': '700',
+                    background: '#1DB954', color: '#fff', 'margin-bottom': '8px',
+                  }}
+                >
+                  Connect Spotify
+                </button>
+              </Show>
+              <Show when={connected()}>
+                <div style={{ display: 'flex', gap: '8px', 'align-items': 'center', 'margin-bottom': '8px' }}>
+                  <div style={{
+                    flex: '1', display: 'flex', 'align-items': 'center', gap: '6px',
+                    background: 'rgba(29,185,84,0.12)', border: '1px solid rgba(29,185,84,0.3)',
+                    'border-radius': 'var(--radius-md)', padding: '8px 10px',
+                    'font-size': '12px', 'font-weight': '600', color: '#1DB954',
+                  }}>
+                    <span style={{ width: '7px', height: '7px', 'border-radius': '50%', background: '#1DB954', 'flex-shrink': '0', display: 'inline-block' }} />
+                    Connected
+                  </div>
+                  <button
+                    onClick={() => { import('../../shared/spotifyAuth').then(m => { m.clearTokens(); setConnected(false) }) }}
+                    style={{
+                      'flex-shrink': '0', padding: '7px 12px', 'border-radius': 'var(--radius-md)',
+                      border: '1px solid var(--border-default)', cursor: 'pointer',
+                      'font-size': '11px', background: 'transparent', color: 'var(--text-muted)',
+                    }}
+                  >
+                    Disconnect
+                  </button>
+                </div>
+              </Show>
+            </>
+          )
+        })()}
       </Show>
 
       <Show when={props.widgetKey === 'dateTime'}>

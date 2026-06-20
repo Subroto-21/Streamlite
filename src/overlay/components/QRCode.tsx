@@ -26,7 +26,7 @@ const QRCode: Component<Props> = (props) => {
         position: 'relative', height: '100%',
         display: 'flex', 'flex-direction': 'column',
         'align-items': 'center', 'justify-content': 'center',
-        gap: '6px', padding: '6px',
+        gap: '6px', padding: '6px', 'box-sizing': 'border-box',
       }}>
         <Show
           when={qrSrc()}
@@ -40,7 +40,7 @@ const QRCode: Component<Props> = (props) => {
             src={qrSrc()}
             alt="QR Code"
             style={{
-              'max-width': '100%', 'max-height': props.style.label ? 'calc(100% - 22px)' : '100%',
+              flex: '1', 'min-height': '0', width: '100%',
               'object-fit': 'contain', 'border-radius': '4px',
             }}
           />

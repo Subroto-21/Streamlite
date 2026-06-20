@@ -82,13 +82,11 @@ export const DEFAULT_CONFIG: LayoutConfig = {
       qrUrl: 'https://kick.com',
       label: '',
     },
-    nowPlaying: {
+    spotify: {
       ...DEFAULT_WIDGET_STYLE,
       enabled: false,
       x: 2, y: 88, width: 30, height: 10,
-      accentColor: '#863bff',
-      lastfmApiKey: '',
-      lastfmUser: '',
+      accentColor: '#1DB954',
     },
     dateTime: {
       ...DEFAULT_WIDGET_STYLE,
