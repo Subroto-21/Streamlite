@@ -92,40 +92,73 @@ const Support: Component = () => {
           Streamlite is built and maintained by one person. Response times may vary, but every message is read.
         </p>
 
-        {/* Cards row */}
-        <div style={{ display: 'grid', 'grid-template-columns': '1fr 1fr', gap: '16px', 'margin-bottom': '52px' }}>
+        {/* Support cards — 2 columns top, then feature request below */}
+        <div style={{ display: 'flex', 'flex-direction': 'column', gap: '16px', 'margin-bottom': '52px' }}>
 
-          {/* Ko-fi card */}
-          <div style={{
-            ...cardStyle,
-            'border-color': 'rgba(255,94,91,0.3)',
-            'background-image': 'radial-gradient(80% 80% at 50% 0%, rgba(255,94,91,0.10) 0%, transparent 70%)',
-          }}>
-            <div style={{ 'font-size': '32px', 'margin-bottom': '14px' }}>☕</div>
-            <h2 style={{
-              'font-size': '18px', 'font-weight': '700', color: 'var(--text-primary)',
-              'font-family': 'var(--font-display)', margin: '0 0 10px',
-            }}>Support the project</h2>
-            <p style={{ 'font-size': '14px', color: 'var(--text-tertiary)', margin: '0 0 22px', 'line-height': '1.55' }}>
-              Streamlite is free and always will be. If it's saved you time or made your stream look better,
-              a coffee goes a long way toward keeping it alive and improving it.
-            </p>
-            <a
-              href="https://ko-fi.com/YOUR_KOFI_USERNAME"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'inline-flex', 'align-items': 'center', gap: '8px',
-                'font-size': '14px', 'font-weight': '600', color: '#ff5e5b',
-                'text-decoration': 'none', padding: '9px 20px',
-                'border-radius': 'var(--radius-md)',
-                border: '1px solid rgba(255,94,91,0.35)',
-                background: 'rgba(255,94,91,0.10)',
-              }}
-            >☕ Buy me a coffee on Ko-fi</a>
+          {/* Ko-fi + PayPal row */}
+          <div style={{ display: 'grid', 'grid-template-columns': '1fr 1fr', gap: '16px' }}>
+
+            {/* Ko-fi card */}
+            <div style={{
+              ...cardStyle,
+              'border-color': 'rgba(255,94,91,0.3)',
+              'background-image': 'radial-gradient(80% 80% at 50% 0%, rgba(255,94,91,0.10) 0%, transparent 70%)',
+            }}>
+              <div style={{ 'font-size': '32px', 'margin-bottom': '14px' }}>☕</div>
+              <h2 style={{
+                'font-size': '18px', 'font-weight': '700', color: 'var(--text-primary)',
+                'font-family': 'var(--font-display)', margin: '0 0 10px',
+              }}>Ko-fi</h2>
+              <p style={{ 'font-size': '14px', color: 'var(--text-tertiary)', margin: '0 0 22px', 'line-height': '1.55' }}>
+                Buy a coffee to keep Streamlite alive and improving. Takes 30 seconds — no account needed on your end.
+              </p>
+              <a
+                href="https://ko-fi.com/YOUR_KOFI_USERNAME"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex', 'align-items': 'center', gap: '8px',
+                  'font-size': '14px', 'font-weight': '600', color: '#ff5e5b',
+                  'text-decoration': 'none', padding: '9px 20px',
+                  'border-radius': 'var(--radius-md)',
+                  border: '1px solid rgba(255,94,91,0.35)',
+                  background: 'rgba(255,94,91,0.10)',
+                }}
+              >☕ Support on Ko-fi</a>
+            </div>
+
+            {/* PayPal card */}
+            <div style={{
+              ...cardStyle,
+              'border-color': 'rgba(0,112,240,0.3)',
+              'background-image': 'radial-gradient(80% 80% at 50% 0%, rgba(0,112,240,0.10) 0%, transparent 70%)',
+            }}>
+              <div style={{ 'font-size': '32px', 'margin-bottom': '14px' }}>💙</div>
+              <h2 style={{
+                'font-size': '18px', 'font-weight': '700', color: 'var(--text-primary)',
+                'font-family': 'var(--font-display)', margin: '0 0 10px',
+              }}>PayPal</h2>
+              <p style={{ 'font-size': '14px', color: 'var(--text-tertiary)', margin: '0 0 22px', 'line-height': '1.55' }}>
+                Prefer PayPal? Send any amount directly — one-time, no strings attached.
+              </p>
+              <a
+                href="https://paypal.me/YOUR_PAYPAL_USERNAME"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-flex', 'align-items': 'center', gap: '8px',
+                  'font-size': '14px', 'font-weight': '600', color: '#0070f0',
+                  'text-decoration': 'none', padding: '9px 20px',
+                  'border-radius': 'var(--radius-md)',
+                  border: '1px solid rgba(0,112,240,0.35)',
+                  background: 'rgba(0,112,240,0.10)',
+                }}
+              >💙 Tip via PayPal</a>
+            </div>
+
           </div>
 
-          {/* Feature request card */}
+          {/* Feature request card — full width */}
           <div style={{
             ...cardStyle,
             'border-color': 'var(--border-violet)',
