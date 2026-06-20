@@ -76,7 +76,12 @@ function Dynamic(p: { component: string; href?: string; onClick?: () => void; st
 // ── Nav ───────────────────────────────────────────────────────────────────
 
 function Nav() {
-  const links = ['Features', 'Widgets', 'Docs', 'Feature Request']
+  const links = [
+    { label: 'Features', href: '#features' },
+    { label: 'Widgets', href: '#widgets' },
+    { label: 'Support', href: '/support.html' },
+    { label: 'Feature Request', href: '/feature-request.html' },
+  ]
   return (
     <nav style={{
       position: 'sticky', top: '0', 'z-index': '20',
@@ -96,24 +101,19 @@ function Nav() {
       <div style={{ display: 'flex', 'align-items': 'center', gap: '28px' }}>
         <For each={links}>
           {(l) => (
-            <a
-              href={l === 'Feature Request' ? '/feature-request.html' : `#${l.toLowerCase()}`}
-              style={{
+            <a href={l.href} style={{
               'font-size': '14px', color: 'var(--text-tertiary)',
               'font-weight': '500', 'text-decoration': 'none',
               transition: 'color var(--dur-fast)',
             }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
               onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-tertiary)'}
-            >{l}</a>
+            >{l.label}</a>
           )}
         </For>
       </div>
 
-      <div style={{ display: 'flex', 'align-items': 'center', gap: '10px' }}>
-        <Btn variant="ghost" size="sm" href="/">Sign in</Btn>
-        <Btn size="sm" href="/builder.html" iconRight>Start free</Btn>
-      </div>
+      <Btn size="sm" href="/builder.html" iconRight>Start free</Btn>
     </nav>
   )
 }
@@ -304,6 +304,149 @@ function Features() {
   )
 }
 
+// ── Widgets showcase ──────────────────────────────────────────────────────
+
+const WIDGETS = [
+  {
+    name: 'Chat Box',
+    emoji: '💬',
+    desc: 'Live Kick chat displayed over your stream. Fully styled, scrollable, and chat-command aware.',
+    accent: '#863bff',
+  },
+  {
+    name: 'Alert Box',
+    emoji: '🔔',
+    desc: 'Pop-up notifications for new followers, subscribers, and gifted subs — with smooth animations.',
+    accent: '#ff8a3d',
+  },
+  {
+    name: 'Follower Goal',
+    emoji: '🎯',
+    desc: 'Animated progress bar showing your community how close you are to the next milestone.',
+    accent: '#53fc18',
+  },
+  {
+    name: 'Viewer Count',
+    emoji: '👁️',
+    desc: 'Live viewer count pulled from Kick. A quiet but powerful social proof widget.',
+    accent: '#ff4d63',
+  },
+  {
+    name: 'Sub Count',
+    emoji: '⭐',
+    desc: 'Display your total subscriber count. Great for celebrating growth milestones mid-stream.',
+    accent: '#ffd700',
+  },
+  {
+    name: 'Countdown Timer',
+    emoji: '⏱️',
+    desc: 'Customisable countdown for stream start, segment end, or any timed event you want to hype.',
+    accent: '#4d7cff',
+  },
+  {
+    name: 'Clock',
+    emoji: '🕐',
+    desc: 'Real-time clock in your choice of timezone. Useful for international audiences.',
+    accent: '#863bff',
+  },
+  {
+    name: 'Date & Time',
+    emoji: '📅',
+    desc: 'Full date and time display with flexible formatting options for any locale.',
+    accent: '#4d7cff',
+  },
+  {
+    name: 'Ticker',
+    emoji: '📰',
+    desc: 'A horizontal scrolling ticker for announcements, social handles, or sponsor shoutouts.',
+    accent: '#ff8a3d',
+  },
+  {
+    name: 'Todo List',
+    emoji: '✅',
+    desc: "Show your stream's to-do list on screen. Knock items off live and keep chat engaged.",
+    accent: '#53fc18',
+  },
+  {
+    name: 'Recent Events',
+    emoji: '📋',
+    desc: 'A live log of recent follows and subscriptions — keeps the energy high between alerts.',
+    accent: '#863bff',
+  },
+  {
+    name: 'QR Code',
+    emoji: '📷',
+    desc: 'Auto-generated QR code from any URL. Perfect for pointing viewers to socials or a link-in-bio.',
+    accent: '#4d7cff',
+  },
+  {
+    name: 'Spotify',
+    emoji: '🎵',
+    desc: 'Shows your currently playing track in Spotify Green. One-click OAuth — no API key needed.',
+    accent: '#1DB954',
+  },
+]
+
+function Widgets() {
+  return (
+    <section id="widgets" style={{ 'max-width': '1200px', margin: '0 auto', padding: '24px 32px 80px' }}>
+      <div style={{ 'text-align': 'center', 'margin-bottom': '44px' }}>
+        <div class="sl-eyebrow" style={{ 'margin-bottom': '12px' }}>Widgets</div>
+        <h2 style={{
+          'font-size': 'clamp(26px, 4vw, 40px)', 'font-weight': '700',
+          'letter-spacing': '-0.03em', color: 'var(--text-primary)',
+          'font-family': 'var(--font-display)',
+        }}>13 widgets, zero configuration</h2>
+        <p style={{ 'font-size': '16px', color: 'var(--text-tertiary)', 'margin-top': '12px', 'max-width': '500px', margin: '12px auto 0', 'line-height': '1.6' }}>
+          Drop any widget onto your canvas and it works immediately. No accounts, no API keys for most, no setup headaches.
+        </p>
+      </div>
+
+      <div style={{ display: 'grid', 'grid-template-columns': 'repeat(auto-fill, minmax(240px, 1fr))', gap: '14px' }}>
+        <For each={WIDGETS}>
+          {(w) => (
+            <div
+              style={{
+                background: 'var(--grad-surface)', 'border-radius': 'var(--radius-xl)',
+                border: '1px solid var(--border-default)', padding: '20px 22px',
+                transition: 'transform var(--dur-base), border-color var(--dur-base)',
+                display: 'flex', 'flex-direction': 'column', gap: '10px',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-3px)'
+                e.currentTarget.style.borderColor = w.accent + '66'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'none'
+                e.currentTarget.style.borderColor = 'var(--border-default)'
+              }}
+            >
+              <div style={{ display: 'flex', 'align-items': 'center', gap: '11px' }}>
+                <span style={{
+                  width: '38px', height: '38px', 'border-radius': '10px', 'flex-shrink': '0',
+                  display: 'flex', 'align-items': 'center', 'justify-content': 'center',
+                  background: w.accent + '1a', 'font-size': '20px',
+                }}>{w.emoji}</span>
+                <span style={{
+                  'font-size': '15px', 'font-weight': '600', color: 'var(--text-primary)',
+                  'font-family': 'var(--font-display)',
+                }}>{w.name}</span>
+              </div>
+              <p style={{ 'font-size': '13px', color: 'var(--text-tertiary)', 'line-height': '1.55', margin: '0' }}>
+                {w.desc}
+              </p>
+            </div>
+          )}
+        </For>
+      </div>
+
+      <div style={{ 'text-align': 'center', 'margin-top': '36px' }}>
+        <Btn href="/builder.html" iconRight>Try all widgets free</Btn>
+      </div>
+    </section>
+  )
+}
+
 // ── Free banner ───────────────────────────────────────────────────────────
 
 const FREE_FEATS = [
@@ -442,20 +585,18 @@ function Footer() {
         </span>
       </div>
       <div style={{ display: 'flex', 'align-items': 'center', gap: '10px' }}>
-        <a
-          href="https://ko-fi.com/YOUR_KOFI_USERNAME"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex', 'align-items': 'center', gap: '7px',
-            'font-size': '13px', color: '#ff5e5b', 'text-decoration': 'none',
-            padding: '6px 14px', 'border-radius': 'var(--radius-md)',
-            border: '1px solid rgba(255,94,91,0.3)', background: 'rgba(255,94,91,0.08)',
-            'font-weight': '500', transition: 'background var(--dur-fast)',
-          }}
-        >
-          ☕ Support on Ko-fi
-        </a>
+        <a href="/support.html" style={{
+          'font-size': '13px', color: 'var(--text-tertiary)', 'text-decoration': 'none',
+          padding: '6px 14px', 'border-radius': 'var(--radius-md)',
+          border: '1px solid var(--border-default)', background: 'var(--surface-2)',
+          'font-weight': '500',
+        }}>Support</a>
+        <a href="/feature-request.html" style={{
+          'font-size': '13px', color: 'var(--text-tertiary)', 'text-decoration': 'none',
+          padding: '6px 14px', 'border-radius': 'var(--radius-md)',
+          border: '1px solid var(--border-default)', background: 'var(--surface-2)',
+          'font-weight': '500',
+        }}>Feature Request</a>
         <a href="/builder.html" style={{
           'font-size': '13px', color: 'var(--text-tertiary)', 'text-decoration': 'none',
           padding: '6px 14px', 'border-radius': 'var(--radius-md)',
@@ -481,6 +622,7 @@ const Landing: Component = () => {
       <Nav />
       <Hero />
       <Features />
+      <Widgets />
       <FreeBanner />
       <Testimonial />
       <CTA />

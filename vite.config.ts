@@ -12,6 +12,7 @@ export default defineConfig({
         builder: resolve(__dirname, 'builder.html'),
         overlay: resolve(__dirname, 'overlay.html'),
         featureRequest: resolve(__dirname, 'feature-request.html'),
+        support: resolve(__dirname, 'support.html'),
       },
     },
   },
