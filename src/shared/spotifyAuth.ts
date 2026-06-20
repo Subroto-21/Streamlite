@@ -3,7 +3,7 @@
 const CLIENT_ID = (import.meta.env.VITE_SPOTIFY_CLIENT_ID as string | undefined) ?? ''
 
 export const clientIdConfigured = CLIENT_ID.length > 0
-const REDIRECT_URI = () => window.location.origin + '/'
+const REDIRECT_URI = () => window.location.origin + '/builder.html'
 
 const KEYS = {
   accessToken:  'sl_spotify_access_token',

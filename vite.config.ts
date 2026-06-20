@@ -8,9 +8,10 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        builder: resolve(__dirname, 'index.html'),
+        landing: resolve(__dirname, 'index.html'),
+        builder: resolve(__dirname, 'builder.html'),
         overlay: resolve(__dirname, 'overlay.html'),
-        landing: resolve(__dirname, 'landing.html'),
+        featureRequest: resolve(__dirname, 'feature-request.html'),
       },
     },
   },

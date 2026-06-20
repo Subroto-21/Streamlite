@@ -76,7 +76,7 @@ function Dynamic(p: { component: string; href?: string; onClick?: () => void; st
 // ── Nav ───────────────────────────────────────────────────────────────────
 
 function Nav() {
-  const links = ['Features', 'Widgets', 'Docs']
+  const links = ['Features', 'Widgets', 'Docs', 'Feature Request']
   return (
     <nav style={{
       position: 'sticky', top: '0', 'z-index': '20',
@@ -85,7 +85,7 @@ function Nav() {
       'border-bottom': '1px solid var(--border-subtle)',
       background: 'rgba(8,6,13,0.80)', 'backdrop-filter': 'blur(14px)',
     }}>
-      <a href="/landing.html" style={{ display: 'flex', 'align-items': 'center', gap: '10px', 'text-decoration': 'none' }}>
+      <a href="/" style={{ display: 'flex', 'align-items': 'center', gap: '10px', 'text-decoration': 'none' }}>
         <img src="/logo-mark.svg" alt="" style={{ width: '26px', height: '26px' }} />
         <span style={{
           'font-family': 'var(--font-display)', 'font-size': '19px',
@@ -96,7 +96,9 @@ function Nav() {
       <div style={{ display: 'flex', 'align-items': 'center', gap: '28px' }}>
         <For each={links}>
           {(l) => (
-            <a href={`#${l.toLowerCase()}`} style={{
+            <a
+              href={l === 'Feature Request' ? '/feature-request.html' : `#${l.toLowerCase()}`}
+              style={{
               'font-size': '14px', color: 'var(--text-tertiary)',
               'font-weight': '500', 'text-decoration': 'none',
               transition: 'color var(--dur-fast)',
@@ -109,8 +111,8 @@ function Nav() {
       </div>
 
       <div style={{ display: 'flex', 'align-items': 'center', gap: '10px' }}>
-        <Btn variant="ghost" size="sm" href="/landing.html">Sign in</Btn>
-        <Btn size="sm" href="/index.html" iconRight>Start free</Btn>
+        <Btn variant="ghost" size="sm" href="/">Sign in</Btn>
+        <Btn size="sm" href="/builder.html" iconRight>Start free</Btn>
       </div>
     </nav>
   )
@@ -229,47 +231,13 @@ function Hero() {
       </p>
 
       <div style={{ display: 'flex', gap: '12px', 'justify-content': 'center', 'margin-top': '32px', 'flex-wrap': 'wrap' }}>
-        <Btn size="lg" href="/index.html" iconRight>Build your overlay</Btn>
-        <Btn size="lg" variant="secondary" href="/index.html">Open builder</Btn>
+        <Btn size="lg" href="/builder.html" iconRight>Build your overlay</Btn>
+        <Btn size="lg" variant="secondary" href="/builder.html">Open builder</Btn>
       </div>
 
       <div style={{ 'margin-top': '56px' }}>
         <ProductCanvas />
       </div>
-    </section>
-  )
-}
-
-// ── Stats strip ───────────────────────────────────────────────────────────
-
-const STATS = [
-  { value: '48,000+', label: 'Streamers', color: 'var(--violet-400)' },
-  { value: '120K',    label: 'Overlays live', color: 'var(--green-500)' },
-  { value: '2 min',   label: 'Setup time', color: 'var(--text-secondary)' },
-  { value: 'Kick · Twitch', label: 'Platforms', color: 'var(--violet-400)' },
-]
-
-function Stats() {
-  return (
-    <section style={{
-      'max-width': '1200px', margin: '0 auto', padding: '8px 32px 72px',
-      display: 'grid', 'grid-template-columns': 'repeat(4, 1fr)', gap: '16px',
-    }}>
-      <For each={STATS}>
-        {(s) => (
-          <div style={{
-            background: 'var(--surface-1)', 'border-radius': 'var(--radius-xl)',
-            border: '1px solid var(--border-default)', padding: '20px 24px',
-          }}>
-            <div style={{
-              'font-family': 'var(--font-display)', 'font-size': '28px',
-              'font-weight': '700', 'letter-spacing': '-0.02em', color: s.color,
-              'margin-bottom': '4px',
-            }}>{s.value}</div>
-            <div style={{ 'font-size': '13px', color: 'var(--text-muted)' }}>{s.label}</div>
-          </div>
-        )}
-      </For>
     </section>
   )
 }
@@ -390,7 +358,7 @@ function FreeBanner() {
           </For>
         </div>
 
-        <Btn size="lg" href="/index.html" iconRight>Build your overlay free</Btn>
+        <Btn size="lg" href="/builder.html" iconRight>Build your overlay free</Btn>
       </div>
     </section>
   )
@@ -446,7 +414,7 @@ function CTA() {
           Free to start. Live in two minutes.
         </p>
         <div style={{ display: 'flex', gap: '12px', 'justify-content': 'center', 'margin-top': '28px' }}>
-          <Btn size="lg" href="/index.html" iconRight>Build your overlay</Btn>
+          <Btn size="lg" href="/builder.html" iconRight>Build your overlay</Btn>
         </div>
       </div>
     </section>
@@ -488,7 +456,7 @@ function Footer() {
         >
           ☕ Support on Ko-fi
         </a>
-        <a href="/index.html" style={{
+        <a href="/builder.html" style={{
           'font-size': '13px', color: 'var(--text-tertiary)', 'text-decoration': 'none',
           padding: '6px 14px', 'border-radius': 'var(--radius-md)',
           border: '1px solid var(--border-default)', background: 'var(--surface-2)',
@@ -512,7 +480,6 @@ const Landing: Component = () => {
     }}>
       <Nav />
       <Hero />
-      <Stats />
       <Features />
       <FreeBanner />
       <Testimonial />
