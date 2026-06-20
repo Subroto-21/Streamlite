@@ -21,12 +21,13 @@ import TodoList from '../overlay/components/TodoList'
 import QRCode from '../overlay/components/QRCode'
 import SpotifyWidget from '../overlay/components/SpotifyWidget'
 import { handleOAuthCallback } from '../shared/spotifyAuth'
+import { mergeWithDefaults } from '../shared/stateEncoder'
 import DateTime from '../overlay/components/DateTime'
 
 // ── Overlay library panel ─────────────────────────────────────────────────
 
 function loadConfig(config: LayoutConfig): void {
-  setBuilderConfig(() => structuredClone(config))
+  setBuilderConfig(() => mergeWithDefaults(structuredClone(config)))
 }
 
 function OverlayLibrary() {

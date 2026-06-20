@@ -100,6 +100,19 @@ export const DEFAULT_CONFIG: LayoutConfig = {
   },
 }
 
+// ── Merge helpers ─────────────────────────────────────────────────────────
+
+export function mergeWithDefaults(config: LayoutConfig): LayoutConfig {
+  return {
+    ...DEFAULT_CONFIG,
+    ...config,
+    widgets: {
+      ...DEFAULT_CONFIG.widgets,
+      ...config.widgets,
+    },
+  }
+}
+
 // ── Codec ─────────────────────────────────────────────────────────────────
 
 export function compressState(config: LayoutConfig): string {
@@ -112,14 +125,7 @@ export function decompressState(str: string): LayoutConfig {
     if (!json) throw new Error('decompression returned empty string')
     const parsed = JSON.parse(json) as LayoutConfig
     if (parsed.v < CURRENT_VERSION) migrate(parsed)
-    // Merge with defaults so old URLs without new widget keys still work.
-    // Widget-level spread ensures new keys (subCount, countdown, etc.) get defaults
-    // while existing widgets keep their saved values.
-    return {
-      ...DEFAULT_CONFIG,
-      ...parsed,
-      widgets: { ...DEFAULT_CONFIG.widgets, ...parsed.widgets },
-    }
+    return mergeWithDefaults(parsed)
   } catch (err) {
     console.error('[Streamlite] Failed to decompress state — using default:', err)
     return structuredClone(DEFAULT_CONFIG)
