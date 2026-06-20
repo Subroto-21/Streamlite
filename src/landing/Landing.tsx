@@ -474,6 +474,20 @@ function Footer() {
         </span>
       </div>
       <div style={{ display: 'flex', 'align-items': 'center', gap: '10px' }}>
+        <a
+          href="https://ko-fi.com/YOUR_KOFI_USERNAME"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex', 'align-items': 'center', gap: '7px',
+            'font-size': '13px', color: '#ff5e5b', 'text-decoration': 'none',
+            padding: '6px 14px', 'border-radius': 'var(--radius-md)',
+            border: '1px solid rgba(255,94,91,0.3)', background: 'rgba(255,94,91,0.08)',
+            'font-weight': '500', transition: 'background var(--dur-fast)',
+          }}
+        >
+          ☕ Support on Ko-fi
+        </a>
         <a href="/index.html" style={{
           'font-size': '13px', color: 'var(--text-tertiary)', 'text-decoration': 'none',
           padding: '6px 14px', 'border-radius': 'var(--radius-md)',
