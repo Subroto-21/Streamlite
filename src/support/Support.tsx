@@ -92,40 +92,11 @@ const Support: Component = () => {
           Streamlite is built and maintained by one person. Response times may vary, but every message is read.
         </p>
 
-        {/* Support cards — 2 columns top, then feature request below */}
+        {/* Support cards */}
         <div style={{ display: 'flex', 'flex-direction': 'column', gap: '16px', 'margin-bottom': '52px' }}>
 
-          {/* Ko-fi + PayPal row */}
+          {/* PayPal + GPay row */}
           <div style={{ display: 'grid', 'grid-template-columns': '1fr 1fr', gap: '16px' }}>
-
-            {/* Ko-fi card */}
-            <div style={{
-              ...cardStyle,
-              'border-color': 'rgba(255,94,91,0.3)',
-              'background-image': 'radial-gradient(80% 80% at 50% 0%, rgba(255,94,91,0.10) 0%, transparent 70%)',
-            }}>
-              <div style={{ 'font-size': '32px', 'margin-bottom': '14px' }}>☕</div>
-              <h2 style={{
-                'font-size': '18px', 'font-weight': '700', color: 'var(--text-primary)',
-                'font-family': 'var(--font-display)', margin: '0 0 10px',
-              }}>Ko-fi</h2>
-              <p style={{ 'font-size': '14px', color: 'var(--text-tertiary)', margin: '0 0 22px', 'line-height': '1.55' }}>
-                Buy a coffee to keep Streamlite alive and improving. Takes 30 seconds — no account needed on your end.
-              </p>
-              <a
-                href="https://ko-fi.com/YOUR_KOFI_USERNAME"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex', 'align-items': 'center', gap: '8px',
-                  'font-size': '14px', 'font-weight': '600', color: '#ff5e5b',
-                  'text-decoration': 'none', padding: '9px 20px',
-                  'border-radius': 'var(--radius-md)',
-                  border: '1px solid rgba(255,94,91,0.35)',
-                  background: 'rgba(255,94,91,0.10)',
-                }}
-              >☕ Support on Ko-fi</a>
-            </div>
 
             {/* PayPal card */}
             <div style={{
@@ -133,13 +104,15 @@ const Support: Component = () => {
               'border-color': 'rgba(0,112,240,0.3)',
               'background-image': 'radial-gradient(80% 80% at 50% 0%, rgba(0,112,240,0.10) 0%, transparent 70%)',
             }}>
-              <div style={{ 'font-size': '32px', 'margin-bottom': '14px' }}>💙</div>
+              <svg width="32" height="32" viewBox="0 0 24 24" style={{ 'margin-bottom': '14px' }}>
+                <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.254-.59 3.025-2.566 6.082-8.558 6.082H9.825l-1.197 7.573h3.174c.458 0 .845-.332.917-.784l.038-.196.727-4.613.047-.252c.072-.452.46-.784.917-.784h.578c3.741 0 6.671-1.52 7.526-5.916.36-1.847.174-3.389-.376-4.823z" fill="#009cde"/>
+              </svg>
               <h2 style={{
                 'font-size': '18px', 'font-weight': '700', color: 'var(--text-primary)',
                 'font-family': 'var(--font-display)', margin: '0 0 10px',
               }}>PayPal</h2>
               <p style={{ 'font-size': '14px', color: 'var(--text-tertiary)', margin: '0 0 22px', 'line-height': '1.55' }}>
-                Prefer PayPal? Send any amount directly — one-time, no strings attached.
+                Send any amount directly via PayPal — one-time, no strings attached. Works from anywhere in the world.
               </p>
               <a
                 href="https://paypal.me/YOUR_PAYPAL_USERNAME"
@@ -147,13 +120,43 @@ const Support: Component = () => {
                 rel="noopener noreferrer"
                 style={{
                   display: 'inline-flex', 'align-items': 'center', gap: '8px',
-                  'font-size': '14px', 'font-weight': '600', color: '#0070f0',
+                  'font-size': '14px', 'font-weight': '600', color: '#009cde',
                   'text-decoration': 'none', padding: '9px 20px',
                   'border-radius': 'var(--radius-md)',
                   border: '1px solid rgba(0,112,240,0.35)',
                   background: 'rgba(0,112,240,0.10)',
                 }}
-              >💙 Tip via PayPal</a>
+              >Tip via PayPal →</a>
+            </div>
+
+            {/* GPay / UPI card */}
+            <div style={{
+              ...cardStyle,
+              'border-color': 'rgba(52,168,83,0.3)',
+              'background-image': 'radial-gradient(80% 80% at 50% 0%, rgba(52,168,83,0.10) 0%, transparent 70%)',
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" style={{ 'margin-bottom': '14px' }}>
+                <path d="M12 0C5.372 0 0 5.373 0 12s5.372 12 12 12 12-5.373 12-12S18.628 0 12 0zm5.618 9.48l-5.84 8.72a.72.72 0 0 1-1.207-.033L7.4 13.72a.72.72 0 0 1 1.2-.79l2.54 3.85 5.24-7.82a.72.72 0 0 1 1.238.52z" fill="#34A853"/>
+              </svg>
+              <h2 style={{
+                'font-size': '18px', 'font-weight': '700', color: 'var(--text-primary)',
+                'font-family': 'var(--font-display)', margin: '0 0 10px',
+              }}>GPay / UPI</h2>
+              <p style={{ 'font-size': '14px', color: 'var(--text-tertiary)', margin: '0 0 16px', 'line-height': '1.55' }}>
+                In India? Send directly via GPay, PhonePe, or any UPI app — instant and free.
+              </p>
+              <div style={{
+                background: 'var(--surface-2)', 'border-radius': 'var(--radius-md)',
+                border: '1px solid var(--border-default)',
+                padding: '10px 14px', 'margin-bottom': '16px',
+                'font-family': 'var(--font-mono)', 'font-size': '14px',
+                color: 'var(--text-primary)', 'letter-spacing': '0.02em',
+              }}>
+                YOUR_UPI_ID@bank
+              </div>
+              <p style={{ 'font-size': '12px', color: 'var(--text-muted)', margin: '0' }}>
+                Open any UPI app → Send money → paste the ID above
+              </p>
             </div>
 
           </div>
