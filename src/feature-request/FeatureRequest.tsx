@@ -19,7 +19,7 @@ const FeatureRequest: Component = () => {
   }
 
   const inputStyle = {
-    width: '100%', 'box-sizing': 'border-box',
+    width: '100%', 'box-sizing': 'border-box' as const,
     background: 'var(--surface-2)', border: '1px solid var(--border-default)',
     'border-radius': 'var(--radius-md)', padding: '10px 14px',
     'font-size': '14px', color: 'var(--text-primary)',
