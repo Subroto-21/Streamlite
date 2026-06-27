@@ -135,6 +135,7 @@ export class KickChatAdapter implements ChatAdapter {
   private pollTimer: ReturnType<typeof setInterval> | null = null
   private workerPollTimer: ReturnType<typeof setInterval> | null = null
   private channelSlug: string | null = null
+  private lastFollowerCount: number | null = null
 
   onMessage(callback: (msg: ChatMessage) => void): void {
     this.messageCallback = callback
@@ -210,6 +211,19 @@ export class KickChatAdapter implements ChatAdapter {
         this.viewerCountCallback?.({ count: viewers, timestamp: Date.now() })
       }
       if (typeof data.followers_count === 'number') {
+        if (this.lastFollowerCount !== null && data.followers_count > this.lastFollowerCount) {
+          const gained = Math.min(data.followers_count - this.lastFollowerCount, 10)
+          for (let i = 0; i < gained; i++) {
+            this.alertCallback?.({
+              id: crypto.randomUUID(),
+              platform: 'kick',
+              type: 'follow',
+              username: 'Someone',
+              timestamp: Date.now() + i,
+            })
+          }
+        }
+        this.lastFollowerCount = data.followers_count
         this.followerCountCallback?.(data.followers_count)
       }
     } catch {
@@ -230,6 +244,7 @@ export class KickChatAdapter implements ChatAdapter {
       this.viewerCountCallback?.({ count: initialViewerCount, timestamp: Date.now() })
     }
     if (typeof initialFollowerCount === 'number') {
+      this.lastFollowerCount = initialFollowerCount
       this.followerCountCallback?.(initialFollowerCount)
     }
     this.pollTimer = setInterval(() => { void this.pollChannelStats() }, 60_000)
