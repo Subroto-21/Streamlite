@@ -10,7 +10,9 @@ const QRCode: Component<Props> = (props) => {
   const qrSrc = createMemo(() => {
     const url = props.style.qrUrl?.trim()
     if (!url) return ''
-    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&bgcolor=000000&color=ffffff&margin=4`
+    const bg = props.style.backgroundColor.replace('#', '')
+    const fg = props.style.accentColor.replace('#', '')
+    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}&bgcolor=${bg}&color=${fg}&margin=4`
   })
 
   return (

@@ -3,6 +3,9 @@ import type { LayoutConfig } from '../shared/types'
 import { builderConfig, setBuilderConfig, setKickChannelSlug } from './store/builderConfigStore'
 import { createChatAdapter } from '../shared/adapters'
 import { addAlert, addMessage } from '../shared/messageStore'
+import { setViewerCount, setHasReceivedCount } from '../shared/viewerCountStore'
+import { setFollowerCount, setHasFollowerCount } from '../shared/followerCountStore'
+import { setSubCount, setHasSubCount } from '../shared/subCountStore'
 import { savedOverlays, saveOverlay, deleteOverlay } from './store/overlayLibrary'
 import { unwrap } from 'solid-js/store'
 import WidgetSelector from './components/WidgetSelector'
@@ -12,9 +15,9 @@ import ChatBox from '../overlay/components/ChatBox'
 import AlertBox from '../overlay/components/AlertBox'
 import FollowerGoal from '../overlay/components/FollowerGoal'
 import ViewerCount from '../overlay/components/ViewerCount'
-import ClockWidget from '../overlay/components/ClockWidget'
-import RecentEvents from '../overlay/components/RecentEvents'
 import SubCount from '../overlay/components/SubCount'
+import RecentEvents from '../overlay/components/RecentEvents'
+import ClockWidget from '../overlay/components/ClockWidget'
 import CountdownTimer from '../overlay/components/CountdownTimer'
 import Ticker from '../overlay/components/Ticker'
 import TodoList from '../overlay/components/TodoList'
@@ -23,6 +26,7 @@ import SpotifyWidget from '../overlay/components/SpotifyWidget'
 import { handleOAuthCallback } from '../shared/spotifyAuth'
 import { mergeWithDefaults } from '../shared/stateEncoder'
 import DateTime from '../overlay/components/DateTime'
+import Weather from '../overlay/components/Weather'
 
 // ── Overlay library panel ─────────────────────────────────────────────────
 
@@ -137,6 +141,9 @@ const Builder: Component = () => {
     adapter.onMessage(addMessage)
     adapter.onAlert(addAlert)
     adapter.onStatusChange((s) => setChatStatus(s as typeof chatStatus extends () => infer R ? R : never))
+    adapter.onViewerCountUpdate(({ count }) => { setViewerCount(count); setHasReceivedCount(true) })
+    adapter.onFollowerCountUpdate((count) => { setFollowerCount(count); setHasFollowerCount(true) })
+    adapter.onSubscriberCountUpdate((count) => { setSubCount(count); setHasSubCount(true) })
     adapter.connect(slug)
     onCleanup(() => adapter.disconnect())
   })
@@ -311,15 +318,16 @@ const Builder: Component = () => {
               <AlertBox     style={builderConfig.widgets.alert} />
               <FollowerGoal style={builderConfig.widgets.followerGoal} />
               <ViewerCount  style={builderConfig.widgets.viewerCount} />
-              <ClockWidget  style={builderConfig.widgets.clock} />
-              <RecentEvents style={builderConfig.widgets.recentEvents} />
               <SubCount     style={builderConfig.widgets.subCount} />
+              <RecentEvents style={builderConfig.widgets.recentEvents} />
+              <ClockWidget  style={builderConfig.widgets.clock} />
               <CountdownTimer style={builderConfig.widgets.countdown} />
               <Ticker       style={builderConfig.widgets.ticker} />
               <TodoList     style={builderConfig.widgets.todoList} />
               <QRCode         style={builderConfig.widgets.qrCode} />
               <SpotifyWidget  style={builderConfig.widgets.spotify} />
               <DateTime       style={builderConfig.widgets.dateTime} />
+              <Weather        style={builderConfig.widgets.weather} />
             </div>
           </div>
         </main>

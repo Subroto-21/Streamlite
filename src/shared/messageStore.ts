@@ -15,10 +15,6 @@ export function addMessage(msg: ChatMessage): void {
   })
 }
 
-export function clearMessages(): void {
-  setMessageStore('messages', [])
-}
-
 export const [alertStore, setAlertStore] = createStore<{ alerts: AlertEvent[] }>({
   alerts: [],
 })
@@ -28,8 +24,4 @@ export function addAlert(alert: AlertEvent): void {
     const next = [...alerts, alert]
     return next.length > MAX_ALERTS ? next.slice(1) : next
   })
-}
-
-export function clearAlerts(): void {
-  setAlertStore('alerts', [])
 }

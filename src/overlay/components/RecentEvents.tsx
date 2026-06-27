@@ -1,37 +1,28 @@
 import { type Component, For, Show } from 'solid-js'
-import type { AlertEvent, LayoutConfig } from '../../shared/types'
+import type { WidgetStyle } from '../../shared/types'
 import { widgetStyleToCSS } from '../../shared/useWidgetStyle'
 import { alertStore } from '../../shared/messageStore'
 
 interface Props {
-  style: LayoutConfig['widgets']['recentEvents']
+  style: WidgetStyle & { maxItems: number }
 }
 
-function eventLabel(alert: AlertEvent): { icon: string; text: string } {
-  if (alert.type === 'subscription') {
-    const months = alert.monthsSubscribed
-    return {
-      icon: '⭐',
-      text: months && months > 1
-        ? `${alert.username} resubbed (${months}mo)`
-        : `${alert.username} subscribed`,
-    }
-  }
-  if (alert.type === 'gift_sub') {
-    const qty = alert.quantityGifted ?? alert.giftedUsers?.length ?? 1
-    return {
-      icon: '🎁',
-      text: `${alert.username} gifted ${qty} sub${qty > 1 ? 's' : ''}`,
-    }
-  }
-  return { icon: '♥', text: `${alert.username} followed` }
+function eventIcon(type: string): string {
+  if (type === 'follow') return '♥'
+  if (type === 'subscription') return '★'
+  if (type === 'gift_sub') return '🎁'
+  return '•'
+}
+
+function eventLabel(alert: { type: string; username: string; monthsSubscribed?: number; quantityGifted?: number }): string {
+  if (alert.type === 'follow') return `${alert.username} followed`
+  if (alert.type === 'subscription') return `${alert.username} subscribed${alert.monthsSubscribed ? ` (${alert.monthsSubscribed}mo)` : ''}`
+  if (alert.type === 'gift_sub') return `${alert.username} gifted ${alert.quantityGifted ?? 1} sub${(alert.quantityGifted ?? 1) !== 1 ? 's' : ''}`
+  return alert.username
 }
 
 const RecentEvents: Component<Props> = (props) => {
-  const visible = () =>
-    [...alertStore.alerts]
-      .reverse()
-      .slice(0, props.style.maxEvents)
+  const recent = () => [...alertStore.alerts].reverse().slice(0, props.style.maxItems)
 
   return (
     <div style={widgetStyleToCSS(props.style)}>
@@ -43,36 +34,43 @@ const RecentEvents: Component<Props> = (props) => {
       }} aria-hidden="true" />
 
       <div style={{
-        position: 'relative', height: '100%',
-        display: 'flex', 'flex-direction': 'column',
-        padding: '8px 10px', gap: '4px', overflow: 'hidden',
+        position: 'relative',
+        height: '100%',
+        display: 'flex',
+        'flex-direction': 'column',
+        padding: '10px 12px',
+        gap: '6px',
+        overflow: 'hidden',
       }}>
         <Show
-          when={visible().length > 0}
+          when={recent().length > 0}
           fallback={
-            <span style={{ color: 'var(--text-color)', opacity: '0.3', 'font-size': '0.85em', margin: 'auto' }}>
-              Recent events
+            <span style={{ color: 'var(--text-color)', opacity: '0.4', 'font-size': '0.85em', margin: 'auto' }}>
+              No events yet
             </span>
           }
         >
-          <For each={visible()}>
-            {(alert) => {
-              const { icon, text } = eventLabel(alert)
-              return (
-                <div style={{
-                  display: 'flex', 'align-items': 'center', gap: '7px',
-                  'font-size': '0.88em', color: 'var(--text-color)',
-                  overflow: 'hidden', 'white-space': 'nowrap', 'text-overflow': 'ellipsis',
-                  'flex-shrink': '0',
+          <For each={recent()}>
+            {(alert) => (
+              <div style={{
+                display: 'flex',
+                'align-items': 'center',
+                gap: '8px',
+                'font-size': '0.9em',
+                color: 'var(--text-color)',
+                overflow: 'hidden',
+              }}>
+                <span style={{ color: 'var(--accent-color)', 'flex-shrink': '0', 'font-size': '0.85em' }}>
+                  {eventIcon(alert.type)}
+                </span>
+                <span style={{
+                  flex: '1', 'min-width': '0',
+                  overflow: 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap',
                 }}>
-                  <span style={{ 'font-size': '1em', 'flex-shrink': '0' }}>{icon}</span>
-                  <span style={{
-                    color: 'var(--accent-color)', 'font-weight': '600',
-                    overflow: 'hidden', 'text-overflow': 'ellipsis',
-                  }}>{text}</span>
-                </div>
-              )
-            }}
+                  {eventLabel(alert)}
+                </span>
+              </div>
+            )}
           </For>
         </Show>
       </div>

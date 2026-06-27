@@ -34,15 +34,16 @@ export interface LayoutConfig {
     alert: WidgetStyle
     followerGoal: WidgetStyle & { goalTarget: number; goalLabel: string }
     viewerCount: WidgetStyle
-    clock: WidgetStyle & { format: '12h' | '24h'; showSeconds: boolean }
-    recentEvents: WidgetStyle & { maxEvents: number }
     subCount: WidgetStyle
+    recentEvents: WidgetStyle & { maxItems: number }
+    clock: WidgetStyle & { format: '12h' | '24h'; showSeconds: boolean }
     countdown: WidgetStyle & { targetDate: string; label: string; showDays: boolean }
     ticker: WidgetStyle & { items: string[]; speed: number }
     todoList: WidgetStyle & { title: string; items: TodoItem[] }
     qrCode: WidgetStyle & { qrUrl: string; label: string }
     spotify: WidgetStyle
-    dateTime: WidgetStyle & { dateFormat: string; showWeather: boolean; city: string }
+    dateTime: WidgetStyle & { dateFormat: string }
+    weather: WidgetStyle & { city: string; unit: 'C' | 'F' }
   }
   sig?: string
 }
@@ -127,6 +128,6 @@ export interface ChatAdapter {
   onAlert(callback: (alert: AlertEvent) => void): void
   onViewerCountUpdate(callback: (update: ViewerCountUpdate) => void): void
   onFollowerCountUpdate(callback: (count: number) => void): void
-  onSubCountUpdate?(callback: (count: number) => void): void
+  onSubscriberCountUpdate(callback: (count: number) => void): void
   onStatusChange(callback: (status: 'connected' | 'disconnected' | 'reconnecting') => void): void
 }

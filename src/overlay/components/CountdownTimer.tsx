@@ -75,7 +75,7 @@ const CountdownTimer: Component<Props> = (props) => {
           <div style={{
             display: 'flex', 'align-items': 'baseline', gap: '4px',
             color: 'var(--accent-color)', 'font-weight': '700',
-            'font-family': "'Fira Code', monospace",
+            'font-family': 'var(--font-family)',
           }}>
             <Show when={props.style.showDays}>
               <span style={{ 'font-size': '1.1em' }}>{pad(timeLeft().days)}</span>

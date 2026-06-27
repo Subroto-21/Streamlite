@@ -14,10 +14,7 @@ const Ticker: Component<Props> = (props) => {
   let lastTime = 0
   const [copies, setCopies] = createSignal(4)
 
-  const text = () => {
-    const items = props.style.items ?? []
-    return items.length > 0 ? items.join('   •   ') : ''
-  }
+  const hasItems = () => (props.style.items ?? []).length > 0
 
   const speed = () => Math.max(10, props.style.speed)
 
@@ -85,7 +82,7 @@ const Ticker: Component<Props> = (props) => {
         overflow: 'hidden',
       }}>
         <Show
-          when={text()}
+          when={hasItems()}
           fallback={
             <span style={{ color: 'var(--text-color)', opacity: '0.4', padding: '0 12px', 'font-size': '0.85em' }}>
               Add ticker messages in the builder...
@@ -95,8 +92,15 @@ const Ticker: Component<Props> = (props) => {
           <div ref={trackEl} style={{ 'white-space': 'nowrap', 'will-change': 'transform' }}>
             <For each={Array.from({ length: copies() })}>
               {() => (
-                <span style={{ 'padding-right': '80px', color: 'var(--text-color)', 'font-weight': '500' }}>
-                  {text()}
+                <span>
+                  <For each={props.style.items ?? []}>
+                    {(item) => (
+                      <span>
+                        <span style={{ color: 'var(--text-color)', 'font-weight': '500' }}>{item}</span>
+                        <span style={{ color: 'var(--accent-color)', 'font-weight': '700', padding: '0 20px' }}>•</span>
+                      </span>
+                    )}
+                  </For>
                 </span>
               )}
             </For>

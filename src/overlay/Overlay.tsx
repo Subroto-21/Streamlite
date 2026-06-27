@@ -12,15 +12,16 @@ import ChatBox from './components/ChatBox'
 import AlertBox from './components/AlertBox'
 import FollowerGoal from './components/FollowerGoal'
 import ViewerCount from './components/ViewerCount'
-import ClockWidget from './components/ClockWidget'
-import RecentEvents from './components/RecentEvents'
 import SubCount from './components/SubCount'
+import RecentEvents from './components/RecentEvents'
+import ClockWidget from './components/ClockWidget'
 import CountdownTimer from './components/CountdownTimer'
 import Ticker from './components/Ticker'
 import TodoList from './components/TodoList'
 import QRCode from './components/QRCode'
 import SpotifyWidget from './components/SpotifyWidget'
 import DateTime from './components/DateTime'
+import Weather from './components/Weather'
 
 const Overlay: Component = () => {
   const adapter = createChatAdapter('kick')
@@ -59,7 +60,7 @@ const Overlay: Component = () => {
     setHasFollowerCount(true)
   })
 
-  adapter.onSubCountUpdate?.((count) => {
+  adapter.onSubscriberCountUpdate((count) => {
     setSubCount(count)
     setHasSubCount(true)
   })
@@ -106,15 +107,16 @@ const Overlay: Component = () => {
       <AlertBox style={config.widgets.alert} />
       <FollowerGoal style={config.widgets.followerGoal} />
       <ViewerCount style={config.widgets.viewerCount} />
-      <ClockWidget style={config.widgets.clock} />
-      <RecentEvents style={config.widgets.recentEvents} />
       <SubCount style={config.widgets.subCount} />
+      <RecentEvents style={config.widgets.recentEvents} />
+      <ClockWidget style={config.widgets.clock} />
       <CountdownTimer style={config.widgets.countdown} />
       <Ticker style={config.widgets.ticker} />
       <TodoList style={config.widgets.todoList} />
       <QRCode style={config.widgets.qrCode} />
       <SpotifyWidget style={config.widgets.spotify} />
       <DateTime style={config.widgets.dateTime} />
+      <Weather style={config.widgets.weather} />
     </div>
   )
 }

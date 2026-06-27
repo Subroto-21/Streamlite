@@ -28,6 +28,17 @@ export const DEFAULT_CONFIG: LayoutConfig = {
       ...DEFAULT_WIDGET_STYLE,
       x: 88, y: 2, width: 10, height: 6,
     },
+    subCount: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 88, y: 10, width: 10, height: 6,
+    },
+    recentEvents: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 2, y: 20, width: 22, height: 30,
+      maxItems: 5,
+    },
     clock: {
       ...DEFAULT_WIDGET_STYLE,
       enabled: false,
@@ -35,19 +46,6 @@ export const DEFAULT_CONFIG: LayoutConfig = {
       accentColor: '#863bff',
       format: '24h',
       showSeconds: false,
-    },
-    recentEvents: {
-      ...DEFAULT_WIDGET_STYLE,
-      enabled: false,
-      x: 75, y: 78, width: 23, height: 20,
-      accentColor: '#863bff',
-      maxEvents: 5,
-    },
-    subCount: {
-      ...DEFAULT_WIDGET_STYLE,
-      enabled: false,
-      x: 88, y: 10, width: 10, height: 6,
-      accentColor: '#863bff',
     },
     countdown: {
       ...DEFAULT_WIDGET_STYLE,
@@ -94,8 +92,14 @@ export const DEFAULT_CONFIG: LayoutConfig = {
       x: 75, y: 10, width: 23, height: 8,
       accentColor: '#863bff',
       dateFormat: 'short',
-      showWeather: false,
+    },
+    weather: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 75, y: 20, width: 12, height: 8,
+      accentColor: '#863bff',
       city: '',
+      unit: 'C' as const,
     },
   },
 }

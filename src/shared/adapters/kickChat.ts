@@ -39,6 +39,7 @@
 import Pusher from 'pusher-js'
 import type { AlertEvent, ChatAdapter, ChatMessage, MessageBadge, ReplyContext, ViewerCountUpdate } from '../types'
 import { derivePrimaryRole, getBadgeFallback, getBadgeLabel } from '../badgeUtils'
+import { fetchWorkerChannel, fetchWorkerEvents, type WorkerEvent } from '../workerClient'
 
 const PUSHER_APP_KEY = '32cbd69e4b950bf97679'
 const PUSHER_CLUSTER = 'us2'
@@ -52,7 +53,6 @@ interface KickChannelResponse {
   }
   followers_count?: number
   viewer_count?: number
-  subscribers_count?: number
   livestream?: {
     viewer_count?: number
   }
@@ -130,9 +130,10 @@ export class KickChatAdapter implements ChatAdapter {
   private subscriberBadgeTiers: SubscriberBadgeTier[] = []
   private viewerCountCallback: ((update: ViewerCountUpdate) => void) | null = null
   private followerCountCallback: ((count: number) => void) | null = null
-  private subCountCallback: ((count: number) => void) | null = null
+  private subscriberCountCallback: ((count: number) => void) | null = null
   private statusCallback: ((status: 'connected' | 'disconnected' | 'reconnecting') => void) | null = null
   private pollTimer: ReturnType<typeof setInterval> | null = null
+  private workerPollTimer: ReturnType<typeof setInterval> | null = null
   private channelSlug: string | null = null
 
   onMessage(callback: (msg: ChatMessage) => void): void {
@@ -151,8 +152,8 @@ export class KickChatAdapter implements ChatAdapter {
     this.followerCountCallback = callback
   }
 
-  onSubCountUpdate(callback: (count: number) => void): void {
-    this.subCountCallback = callback
+  onSubscriberCountUpdate(callback: (count: number) => void): void {
+    this.subscriberCountCallback = callback
   }
 
   onStatusChange(callback: (status: 'connected' | 'disconnected' | 'reconnecting') => void): void {
@@ -170,6 +171,10 @@ export class KickChatAdapter implements ChatAdapter {
     if (this.pollTimer !== null) {
       clearInterval(this.pollTimer)
       this.pollTimer = null
+    }
+    if (this.workerPollTimer !== null) {
+      clearInterval(this.workerPollTimer)
+      this.workerPollTimer = null
     }
     this.channelSlug = null
     this.pusher?.disconnect()
@@ -207,9 +212,6 @@ export class KickChatAdapter implements ChatAdapter {
       if (typeof data.followers_count === 'number') {
         this.followerCountCallback?.(data.followers_count)
       }
-      if (typeof data.subscribers_count === 'number') {
-        this.subCountCallback?.(data.subscribers_count)
-      }
     } catch {
       // Network error — non-critical, next poll will retry
     }
@@ -217,7 +219,7 @@ export class KickChatAdapter implements ChatAdapter {
 
   private async _connect(channelSlug: string): Promise<void> {
     this.channelSlug = channelSlug
-    const { chatroomId, channelId, initialViewerCount, initialFollowerCount, initialSubCount, subscriberBadgeTiers } = await resolveChannelIds(channelSlug)
+    const { chatroomId, channelId, initialViewerCount, initialFollowerCount, subscriberBadgeTiers } = await resolveChannelIds(channelSlug)
     this.subscriberBadgeTiers = subscriberBadgeTiers
     console.log(`[KickChatAdapter] resolved ${channelSlug} → chatroomId=${chatroomId}, channelId=${channelId}`)
 
@@ -230,10 +232,28 @@ export class KickChatAdapter implements ChatAdapter {
     if (typeof initialFollowerCount === 'number') {
       this.followerCountCallback?.(initialFollowerCount)
     }
-    if (typeof initialSubCount === 'number') {
-      this.subCountCallback?.(initialSubCount)
-    }
     this.pollTimer = setInterval(() => { void this.pollChannelStats() }, 60_000)
+
+    // Fetch official channel data from worker: triggers webhook subscription and
+    // returns subscriber count from the official Kick API.
+    fetchWorkerChannel(channelSlug).then(info => {
+      if (info?.subscriberCount != null) {
+        this.subscriberCountCallback?.(info.subscriberCount)
+      }
+    }).catch(() => {})
+
+    // Poll worker for follow/sub events every 5 s. Worker events are the
+    // reliable source for follows (unavailable via Pusher) and a verified
+    // fallback for sub events.
+    let workerSince = Date.now()
+    this.workerPollTimer = setInterval(async () => {
+      const events = await fetchWorkerEvents(channelId, workerSince)
+      for (const ev of events) {
+        if (ev.timestamp > workerSince) workerSince = ev.timestamp
+        const alert = mapWorkerEventToAlert(ev)
+        if (alert) this.alertCallback?.(alert)
+      }
+    }, 30_000)
 
     this.pusher = new Pusher(PUSHER_APP_KEY, { cluster: PUSHER_CLUSTER })
 
@@ -310,10 +330,12 @@ export class KickChatAdapter implements ChatAdapter {
     // Kick's frontend subscribes to this alongside .v2; log everything to
     // discover what event names actually appear here.
     const chatroomBaseChannel = this.pusher.subscribe(`chatrooms.${chatroomId}`)
-    chatroomBaseChannel.bind_global((eventName: string, data: unknown) => {
-      if (eventName.startsWith('pusher:')) return
-      console.log('[KickChatAdapter] chatroom-base event:', eventName, data)
-    })
+    if (import.meta.env.DEV) {
+      chatroomBaseChannel.bind_global((eventName: string, data: unknown) => {
+        if (eventName.startsWith('pusher:')) return
+        console.log('[KickChatAdapter] chatroom-base event:', eventName, data)
+      })
+    }
 
     // ── channel.{id} — kept for sub/gift events ────────────────────────────
     const alertChannel = this.pusher.subscribe(`channel.${channelId}`)
@@ -325,12 +347,12 @@ export class KickChatAdapter implements ChatAdapter {
       console.error(`[KickChatAdapter] channel.${channelId} subscription FAILED — may require auth:`, err)
     })
 
-    // Log every event on this channel — names are undocumented.
-    // Inspect these in the console to confirm actual event names Kick sends.
-    alertChannel.bind_global((eventName: string, data: unknown) => {
-      if (eventName.startsWith('pusher:')) return
-      console.log('[KickChatAdapter] channel event:', eventName, data)
-    })
+    if (import.meta.env.DEV) {
+      alertChannel.bind_global((eventName: string, data: unknown) => {
+        if (eventName.startsWith('pusher:')) return
+        console.log('[KickChatAdapter] channel event:', eventName, data)
+      })
+    }
 
     // Viewer count via Pusher — unverified event names (no live traffic confirmed
     // these during Phase 2). bind_global above will log them if they exist.
@@ -412,12 +434,45 @@ export class KickChatAdapter implements ChatAdapter {
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
+function mapWorkerEventToAlert(ev: WorkerEvent): AlertEvent | null {
+  switch (ev.type) {
+    case 'follow':
+      return {
+        id: crypto.randomUUID(),
+        platform: 'kick',
+        type: 'follow',
+        username: ev.username,
+        timestamp: ev.timestamp,
+      }
+    case 'sub':
+    case 'resub':
+      return {
+        id: crypto.randomUUID(),
+        platform: 'kick',
+        type: 'subscription',
+        username: ev.username,
+        monthsSubscribed: typeof ev.data?.months === 'number' ? ev.data.months : undefined,
+        timestamp: ev.timestamp,
+      }
+    case 'giftsub':
+      return {
+        id: crypto.randomUUID(),
+        platform: 'kick',
+        type: 'gift_sub',
+        username: ev.username,
+        quantityGifted: typeof ev.data?.count === 'number' ? ev.data.count : undefined,
+        timestamp: ev.timestamp,
+      }
+    default:
+      return null
+  }
+}
+
 async function resolveChannelIds(slug: string): Promise<{
   chatroomId: number
   channelId: number
   initialViewerCount?: number
   initialFollowerCount?: number
-  initialSubCount?: number
   subscriberBadgeTiers: SubscriberBadgeTier[]
 }> {
   const res = await fetch(`https://kick.com/api/v2/channels/${slug}`)
@@ -433,7 +488,6 @@ async function resolveChannelIds(slug: string): Promise<{
     channelId: data.id,
     initialViewerCount: data.livestream?.viewer_count ?? data.viewer_count,
     initialFollowerCount: data.followers_count,
-    initialSubCount: data.subscribers_count,
     subscriberBadgeTiers,
   }
 }

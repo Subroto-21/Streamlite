@@ -1,0 +1,18 @@
+name = "streamlite-worker"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "885ebb5de7cb4151b9d68430045fc79a"
+preview_id = "5e3108fdf8364cbeb05018335585b9c8"
+
+[vars]
+KICK_API_BASE = "https://api.kick.com/public/v1"
+KICK_TOKEN_URL = "https://id.kick.com/oauth/token"
+MAX_EVENTS = "20"
+
+# Secrets (set via: wrangler secret put KICK_CLIENT_ID)
+# KICK_CLIENT_ID
+# KICK_CLIENT_SECRET
+# KICK_WEBHOOK_SECRET

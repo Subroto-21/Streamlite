@@ -1,34 +1,5 @@
 import type { LayoutConfig } from './types'
 
-export interface ParsedCommand {
-  name: string
-  args: string[]
-  raw: string
-}
-
-export function parseCommand(text: string, prefix = '!'): ParsedCommand | null {
-  const trimmed = text.trim()
-  if (!trimmed.startsWith(prefix)) return null
-
-  const parts = trimmed.slice(prefix.length).split(/\s+/)
-  const [name, ...args] = parts
-  if (!name) return null
-
-  return { name: name.toLowerCase(), args, raw: trimmed }
-}
-
-export function isCommand(text: string, command: string, prefix = '!'): boolean {
-  const parsed = parseCommand(text, prefix)
-  return parsed?.name === command.toLowerCase()
-}
-
-export function parseGoalIncrement(text: string, command = 'goal', prefix = '!'): number | null {
-  const parsed = parseCommand(text, prefix)
-  if (!parsed || parsed.name !== command) return null
-  const value = Number(parsed.args[0])
-  return Number.isFinite(value) ? value : null
-}
-
 // ── Overlay control command parser ────────────────────────────────────────
 // Pure function — no SolidJS, adapter, or DOM dependencies.
 // Syntax: !overlay <show|hide> <widget>
@@ -45,6 +16,21 @@ const WIDGET_ALIASES: Record<string, keyof LayoutConfig['widgets']> = {
   followergoal: 'followerGoal',
   viewers: 'viewerCount',
   viewercount: 'viewerCount',
+  subs: 'subCount',
+  subcount: 'subCount',
+  events: 'recentEvents',
+  recentevents: 'recentEvents',
+  clock: 'clock',
+  countdown: 'countdown',
+  timer: 'countdown',
+  ticker: 'ticker',
+  todo: 'todoList',
+  todolist: 'todoList',
+  qr: 'qrCode',
+  qrcode: 'qrCode',
+  spotify: 'spotify',
+  datetime: 'dateTime',
+  date: 'dateTime',
 }
 
 export function parseOverlayCommand(messageText: string): CommandResult {
@@ -72,6 +58,15 @@ if (import.meta.env.DEV) {
     { input: '!overlay hide goal',         expectMatch: true  },
     { input: '!overlay show alerts',       expectMatch: true  },
     { input: '!overlay hide viewercount',  expectMatch: true  },
+    { input: '!overlay show subs',         expectMatch: true  },
+    { input: '!overlay hide events',       expectMatch: true  },
+    { input: '!overlay show clock',        expectMatch: true  },
+    { input: '!overlay hide countdown',    expectMatch: true  },
+    { input: '!overlay show ticker',       expectMatch: true  },
+    { input: '!overlay hide todo',         expectMatch: true  },
+    { input: '!overlay show qr',           expectMatch: true  },
+    { input: '!overlay hide spotify',      expectMatch: true  },
+    { input: '!overlay show datetime',     expectMatch: true  },
     { input: '!OVERLAY HIDE CHAT',         expectMatch: true  },
     { input: '!overlay hide unknown',      expectMatch: false },
     { input: '!overlay chat',              expectMatch: false },

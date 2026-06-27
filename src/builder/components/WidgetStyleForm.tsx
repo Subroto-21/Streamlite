@@ -144,6 +144,32 @@ const WidgetStyleForm: Component<Props> = (props) => {
         </select>
       </div>
 
+      <Show when={props.widgetKey === 'chat' || props.widgetKey === 'alert'}>
+        <div style={{ 'margin-bottom': '2px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Animation</span>
+          <select
+            style={selectStyle}
+            value={widget().animation}
+            onChange={(e) => p('animation', e.currentTarget.value)}
+          >
+            <option value="none">None</option>
+            <option value="fade">Fade</option>
+            <option value="slide">Slide</option>
+            <option value="bounce">Bounce</option>
+          </select>
+        </div>
+      </Show>
+
+      <Show when={props.widgetKey === 'recentEvents'}>
+        <SectionLabel>Recent Events</SectionLabel>
+        <SliderField
+          label="Max items"
+          value={builderConfig.widgets.recentEvents.maxItems}
+          min={1} max={10}
+          onChange={(v) => applyConfigPatch(setBuilderConfig, { recentEvents: { maxItems: v } })}
+        />
+      </Show>
+
       <Show when={props.widgetKey === 'followerGoal'}>
         <SectionLabel>Goal</SectionLabel>
         <div style={{ 'margin-bottom': '10px' }}>
@@ -203,16 +229,6 @@ const WidgetStyleForm: Component<Props> = (props) => {
             }} />
           </button>
         </div>
-      </Show>
-
-      <Show when={props.widgetKey === 'recentEvents'}>
-        <SectionLabel>Events</SectionLabel>
-        <SliderField
-          label="Max events shown"
-          value={builderConfig.widgets.recentEvents.maxEvents}
-          min={1} max={10} step={1}
-          onChange={(v) => applyConfigPatch(setBuilderConfig, { recentEvents: { maxEvents: v } })}
-        />
       </Show>
 
       <Show when={props.widgetKey === 'countdown'}>
@@ -446,27 +462,31 @@ const WidgetStyleForm: Component<Props> = (props) => {
             <option value="long">Long (Monday, June 17, 2026)</option>
           </select>
         </div>
-        <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '10px' }}>
-          <span style={{ 'font-size': '12px', color: 'var(--text-secondary)' }}>Show weather</span>
-          <button
-            onClick={() => applyConfigPatch(setBuilderConfig, { dateTime: { showWeather: !builderConfig.widgets.dateTime.showWeather } })}
-            style={{ width: '32px', height: '18px', 'border-radius': 'var(--radius-pill)', border: 'none', cursor: 'pointer', position: 'relative', padding: '0', background: builderConfig.widgets.dateTime.showWeather ? 'var(--green-500)' : 'var(--surface-4)', transition: 'background var(--dur-base)' }}
-          >
-            <span style={{ position: 'absolute', top: '2px', left: builderConfig.widgets.dateTime.showWeather ? 'calc(100% - 16px)' : '2px', width: '14px', height: '14px', 'border-radius': '50%', background: '#fff', transition: 'left var(--dur-base) var(--ease-spring)', 'box-shadow': '0 1px 3px rgba(0,0,0,0.4)' }} />
-          </button>
+      </Show>
+
+      <Show when={props.widgetKey === 'weather'}>
+        <SectionLabel>Weather</SectionLabel>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>City (leave empty for auto-detect)</span>
+          <input
+            type="text"
+            placeholder="London, New York, Tokyo…"
+            style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
+            value={builderConfig.widgets.weather.city}
+            onInput={(e) => applyConfigPatch(setBuilderConfig, { weather: { city: e.currentTarget.value } })}
+          />
         </div>
-        <Show when={builderConfig.widgets.dateTime.showWeather}>
-          <div style={{ 'margin-bottom': '10px' }}>
-            <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>City (leave empty for auto-detect)</span>
-            <input
-              type="text"
-              placeholder="London, New York, Tokyo…"
-              style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none' }}
-              value={builderConfig.widgets.dateTime.city}
-              onInput={(e) => applyConfigPatch(setBuilderConfig, { dateTime: { city: e.currentTarget.value } })}
-            />
-          </div>
-        </Show>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Unit</span>
+          <select
+            style={selectStyle}
+            value={builderConfig.widgets.weather.unit}
+            onChange={(e) => applyConfigPatch(setBuilderConfig, { weather: { unit: e.currentTarget.value as 'C' | 'F' } })}
+          >
+            <option value="C">Celsius (°C)</option>
+            <option value="F">Fahrenheit (°F)</option>
+          </select>
+        </div>
       </Show>
 
     </div>
