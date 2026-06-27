@@ -3,11 +3,8 @@ import type { AlertEvent, WidgetStyle } from '../../shared/types'
 import { alertStore } from '../../shared/messageStore'
 import { widgetStyleToCSS, animationClass } from '../../shared/useWidgetStyle'
 
-// WHY: one alert at a time — stacking multiple alerts simultaneously is
-// visually noisy and the OBS canvas has limited space. Alerts queue up
-// in alertStore (capped at 10) and are consumed one-by-one as each dismisses.
 const ALERT_DURATION_MS = 5_000
-const EXIT_DURATION_MS = 200
+const EXIT_DURATION_MS = 300
 
 interface Props {
   style: WidgetStyle
@@ -25,7 +22,6 @@ const AlertBox: Component<Props> = (props) => {
   const [exiting, setExiting] = createSignal(false)
   const displayed = new Set<string>()
 
-  // Pick up the next undisplayed alert whenever the slot is free
   createEffect(() => {
     if (current() !== null) return
     const next = alertStore.alerts.find(a => !displayed.has(a.id))
@@ -34,7 +30,6 @@ const AlertBox: Component<Props> = (props) => {
     setCurrent(next)
   })
 
-  // Auto-dismiss after ALERT_DURATION_MS, play exit animation first
   createEffect(() => {
     if (!current()) return
     const dismissTimer = setTimeout(() => {
@@ -52,36 +47,30 @@ const AlertBox: Component<Props> = (props) => {
     : animationClass(props.style.animation)
 
   return (
+    // Outer div holds the reserved position/size — invisible when no alert is active
     <div style={widgetStyleToCSS(props.style)}>
-      <div style={{
-        position: 'absolute', inset: '0',
-        'background-color': 'var(--bg-color)',
-        opacity: 'var(--bg-opacity)',
-        'border-radius': 'var(--border-radius)',
-      }} aria-hidden="true" />
-
       <Show when={current()}>
         {(alert) => (
-          <div
-            class={containerClass()}
-            style={{
-              position: 'relative',
-              height: '100%',
-              display: 'flex',
-              'align-items': 'center',
-              'justify-content': 'center',
-              padding: '12px',
-              color: 'var(--text-color)',
-              'text-align': 'center',
-            }}
-          >
-            <span style={{
-              'font-size': '1.15em',
-              'font-weight': '700',
-              color: 'var(--accent-color)',
+          // Animate the whole alert (background + text) together on entry/exit
+          <div class={containerClass()} style={{ position: 'absolute', inset: '0' }}>
+            {/* Background layer — opacity only affects this div, not the text */}
+            <div style={{
+              position: 'absolute', inset: '0',
+              'background-color': 'var(--bg-color)',
+              opacity: 'var(--bg-opacity)',
+              'border-radius': 'var(--border-radius)',
+            }} aria-hidden="true" />
+
+            {/* Content layer — sits above background, full opacity */}
+            <div style={{
+              position: 'relative', height: '100%',
+              display: 'flex', 'align-items': 'center', 'justify-content': 'center',
+              padding: '12px', 'text-align': 'center', color: 'var(--text-color)',
             }}>
-              {alertText(alert())}
-            </span>
+              <span style={{ 'font-size': '1.15em', 'font-weight': '700', color: 'var(--accent-color)' }}>
+                {alertText(alert())}
+              </span>
+            </div>
           </div>
         )}
       </Show>

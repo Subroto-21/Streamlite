@@ -214,6 +214,16 @@ const Builder: Component = () => {
           <div style={{ padding: '14px 14px 12px', 'border-bottom': '1px solid var(--border-default)' }}>
             <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '8px' }}>
               <span class="sl-eyebrow">Channel</span>
+              <button
+                onClick={() => addAlert({ id: crypto.randomUUID(), platform: 'kick', type: 'follow', username: 'TestUser', timestamp: Date.now() })}
+                title="Fire a fake follow alert to test the Alert Box"
+                style={{
+                  background: 'rgba(134,59,255,0.12)', border: '1px solid var(--border-violet)',
+                  'border-radius': 'var(--radius-sm)', padding: '2px 8px',
+                  cursor: 'pointer', 'font-size': '10px', 'font-weight': '600',
+                  color: 'var(--violet-300)',
+                }}
+              >Test Alert</button>
             </div>
             <div style={{
               display: 'flex', 'align-items': 'center',

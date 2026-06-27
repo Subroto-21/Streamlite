@@ -38,6 +38,43 @@ export default {
       return json({ events }, 200)
     }
 
+    // GET /status/:channelId — debug: shows webhook subscription state + stored events
+    if (request.method === 'GET' && path.startsWith('/status/')) {
+      const channelId = path.slice('/status/'.length)
+      const [subId, subError, events] = await Promise.all([
+        env.KV.get(`webhook_sub:${channelId}`),
+        env.KV.get(`webhook_sub_error:${channelId}`),
+        getEvents(env, channelId),
+      ])
+      return json({
+        channelId,
+        webhookSubscribed: subId !== null,
+        webhookSubId: subId,
+        webhookSubError: subError,
+        eventCount: events.length,
+        events,
+      }, 200)
+    }
+
+    // POST /inject/:channelId — debug: push a fake follow event to test the pipeline
+    if (request.method === 'POST' && path.startsWith('/inject/')) {
+      const channelId = path.slice('/inject/'.length)
+      const { pushEvent } = await import('./events')
+      await pushEvent(env, channelId, {
+        type: 'follow',
+        username: 'TestUser',
+        timestamp: Date.now(),
+      })
+      return json({ ok: true, channelId, message: 'Test follow event injected' }, 200)
+    }
+
+    // POST /reset-sub/:channelId — debug: clear webhook sub so it re-subscribes next channel fetch
+    if (request.method === 'POST' && path.startsWith('/reset-sub/')) {
+      const channelId = path.slice('/reset-sub/'.length)
+      await env.KV.delete(`webhook_sub:${channelId}`)
+      return json({ ok: true, channelId, message: 'Webhook subscription cleared — will re-subscribe on next /channel/ request' }, 200)
+    }
+
     return new Response('Not Found', { status: 404 })
   },
 }
@@ -63,19 +100,24 @@ async function handleChannel(slug: string, env: Env): Promise<Response> {
 
     if (!channel) return json({ error: 'Channel not found' }, 404)
 
-    // Fire-and-forget — don't block the response if subscription fails
-    const channelId = channel.id as number
-    env.KV.get(`webhook_sub:${channelId}`).then(existing => {
-      if (!existing) ensureWebhookSubscribed(env, channelId).catch(() => {})
-    })
+    // Kick's official API uses broadcaster_user_id (not id) for the numeric channel ID
+    const channelId = (channel.broadcaster_user_id ?? channel.id ?? channel.user_id) as number | undefined
 
+    if (channelId) {
+      const existingSub = await env.KV.get(`webhook_sub:${channelId}`)
+      if (!existingSub) {
+        await ensureWebhookSubscribed(env, channelId).catch(() => {})
+      }
+    }
+
+    const stream = channel.stream as Record<string, unknown> | undefined
     return json({
-      channelId: channel.id,
+      channelId,
       slug: channel.slug,
-      subscriberCount: channel.active_subscribers_count,
-      followerCount: channel.followers_count,
-      viewerCount: (channel.stream as Record<string, unknown> | undefined)?.viewer_count ?? 0,
-      isLive: (channel.stream as Record<string, unknown> | undefined)?.is_live ?? false,
+      subscriberCount: channel.active_subscribers_count ?? 0,
+      followerCount: channel.followers_count ?? 0,
+      viewerCount: stream?.viewer_count ?? 0,
+      isLive: stream?.is_live ?? false,
     }, 200)
   } catch (err) {
     return new Response(`Internal error: ${String(err)}`, { status: 500 })

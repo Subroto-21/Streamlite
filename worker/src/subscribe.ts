@@ -33,11 +33,15 @@ export async function ensureWebhookSubscribed(env: Env, channelId: number): Prom
 
   if (!res.ok) {
     const text = await res.text()
+    // Store the error in KV so /status can surface it, TTL 1h so it retries tomorrow
+    await env.KV.put(`webhook_sub_error:${channelId}`, `${res.status}: ${text}`, { expirationTtl: 3600 })
     throw new Error(`Kick webhook subscription failed: ${res.status} ${text}`)
   }
 
-  const data = await res.json<{ data?: { id?: string } }>()
-  const subId = data.data?.id ?? 'ok'
+  const data = await res.json<{ data?: { id?: string }[] | { id?: string } }>()
+  // Kick may return data as array or object depending on batch vs single
+  const item = Array.isArray(data.data) ? data.data[0] : data.data
+  const subId = item?.id ?? 'ok'
 
   // Store subscription for 30 days — re-subscribe if Kick expires it
   await env.KV.put(kvKey, subId, { expirationTtl: 60 * 60 * 24 * 30 })

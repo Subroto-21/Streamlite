@@ -234,20 +234,23 @@ export class KickChatAdapter implements ChatAdapter {
     }
     this.pollTimer = setInterval(() => { void this.pollChannelStats() }, 60_000)
 
-    // Fetch official channel data from worker: triggers webhook subscription and
-    // returns subscriber count from the official Kick API.
-    fetchWorkerChannel(channelSlug).then(info => {
-      if (info?.subscriberCount != null) {
-        this.subscriberCountCallback?.(info.subscriberCount)
-      }
-    }).catch(() => {})
+    // Fetch official channel data from worker: triggers webhook subscription,
+    // returns subscriber count, and gives us the authoritative channelId to poll.
+    // We await this so the poll interval uses the correct ID from the start.
+    const workerInfo = await fetchWorkerChannel(channelSlug).catch(() => null)
+    if (workerInfo?.subscriberCount != null) {
+      this.subscriberCountCallback?.(workerInfo.subscriberCount)
+    }
+    // Use worker channelId (from official Kick API) as source of truth.
+    // Falls back to public API channelId if worker is unreachable.
+    const workerChannelId = workerInfo?.channelId ?? channelId
 
-    // Poll worker for follow/sub events every 5 s. Worker events are the
+    // Poll worker for follow/sub events every 30 s. Worker events are the
     // reliable source for follows (unavailable via Pusher) and a verified
     // fallback for sub events.
     let workerSince = Date.now()
     this.workerPollTimer = setInterval(async () => {
-      const events = await fetchWorkerEvents(channelId, workerSince)
+      const events = await fetchWorkerEvents(workerChannelId, workerSince)
       for (const ev of events) {
         if (ev.timestamp > workerSince) workerSince = ev.timestamp
         const alert = mapWorkerEventToAlert(ev)
