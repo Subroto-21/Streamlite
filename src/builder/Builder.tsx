@@ -11,6 +11,7 @@ import { unwrap } from 'solid-js/store'
 import WidgetSelector from './components/WidgetSelector'
 import WidgetStyleForm from './components/WidgetStyleForm'
 import LinkOutput from './components/LinkOutput'
+import PresetGallery from './components/PresetGallery'
 import ChatBox from '../overlay/components/ChatBox'
 import AlertBox from '../overlay/components/AlertBox'
 import FollowerGoal from '../overlay/components/FollowerGoal'
@@ -36,6 +37,13 @@ function loadConfig(config: LayoutConfig): void {
   setBuilderConfig(() => mergeWithDefaults(structuredClone(config)))
 }
 
+// Same load path as loadConfig, but presets carry no channel slug of their
+// own — preserve whatever the streamer already entered.
+const [showGallery, setShowGallery] = createSignal(false)
+function applyPreset(config: LayoutConfig): void {
+  setBuilderConfig(() => mergeWithDefaults({ ...structuredClone(config), kickChannelSlug: builderConfig.kickChannelSlug }))
+}
+
 function OverlayLibrary() {
   const [name, setName] = createSignal('My Overlay')
   const [saved, setSaved] = createSignal(false)
@@ -50,7 +58,19 @@ function OverlayLibrary() {
     <div style={{ 'border-bottom': '1px solid var(--border-default)' }}>
       {/* Save row */}
       <div style={{ padding: '10px 14px 8px' }}>
-        <span class="sl-eyebrow" style={{ display: 'block', 'margin-bottom': '8px' }}>Overlays</span>
+        <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '8px' }}>
+          <span class="sl-eyebrow">Overlays</span>
+          <button
+            onClick={() => setShowGallery(true)}
+            title="Browse preset overlay looks"
+            style={{
+              background: 'rgba(134,59,255,0.12)', border: '1px solid var(--border-violet)',
+              'border-radius': 'var(--radius-sm)', padding: '2px 8px',
+              cursor: 'pointer', 'font-size': '10px', 'font-weight': '600',
+              color: 'var(--violet-300)',
+            }}
+          >Presets</button>
+        </div>
         <div style={{ display: 'flex', gap: '6px' }}>
           <input
             type="text"
@@ -346,6 +366,13 @@ const Builder: Component = () => {
       }}>
         <LinkOutput />
       </footer>
+
+      <Show when={showGallery()}>
+        <PresetGallery
+          onClose={() => setShowGallery(false)}
+          onSelect={(config) => { applyPreset(config); setShowGallery(false) }}
+        />
+      </Show>
 
     </div>
   )
