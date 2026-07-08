@@ -6,7 +6,7 @@ import { addAlert, addMessage } from '../shared/messageStore'
 import { setViewerCount, setHasReceivedCount } from '../shared/viewerCountStore'
 import { setFollowerCount, setHasFollowerCount } from '../shared/followerCountStore'
 import { setSubCount, setHasSubCount } from '../shared/subCountStore'
-import { savedOverlays, saveOverlay, deleteOverlay } from './store/overlayLibrary'
+import { savedOverlays, saveOverlay, deleteOverlay, renameOverlay } from './store/overlayLibrary'
 import { unwrap } from 'solid-js/store'
 import WidgetSelector from './components/WidgetSelector'
 import WidgetStyleForm from './components/WidgetStyleForm'
@@ -47,11 +47,28 @@ function applyPreset(config: LayoutConfig): void {
 function OverlayLibrary() {
   const [name, setName] = createSignal('My Overlay')
   const [saved, setSaved] = createSignal(false)
+  const [editingId, setEditingId] = createSignal<string | null>(null)
+  const [editingName, setEditingName] = createSignal('')
 
   const handleSave = () => {
-    saveOverlay(name(), unwrap(builderConfig) as LayoutConfig)
+    // unwrap() returns a live reference into the store's mutable internals,
+    // not a snapshot — without cloning, every later edit in the builder
+    // would silently mutate this "saved" config too, since Solid's store
+    // setters mutate the underlying target object in place.
+    saveOverlay(name(), structuredClone(unwrap(builderConfig)) as LayoutConfig)
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
+  }
+
+  const startRename = (id: string, currentName: string) => {
+    setEditingId(id)
+    setEditingName(currentName)
+  }
+
+  const commitRename = () => {
+    const id = editingId()
+    if (id) renameOverlay(id, editingName())
+    setEditingId(null)
   }
 
   return (
@@ -97,11 +114,39 @@ function OverlayLibrary() {
                 'margin-bottom': '2px',
                 background: 'var(--surface-2)', border: '1px solid var(--border-default)',
               }}>
-                <span style={{
-                  flex: '1', 'min-width': '0', 'font-size': '12px',
-                  color: 'var(--text-secondary)', overflow: 'hidden',
-                  'text-overflow': 'ellipsis', 'white-space': 'nowrap',
-                }}>{overlay.name}</span>
+                <Show
+                  when={editingId() === overlay.id}
+                  fallback={
+                    <span
+                      onDblClick={() => startRename(overlay.id, overlay.name)}
+                      title="Double-click to rename"
+                      style={{
+                        flex: '1', 'min-width': '0', 'font-size': '12px',
+                        color: 'var(--text-secondary)', overflow: 'hidden',
+                        'text-overflow': 'ellipsis', 'white-space': 'nowrap',
+                        cursor: 'text',
+                      }}
+                    >{overlay.name}</span>
+                  }
+                >
+                  <input
+                    type="text"
+                    value={editingName()}
+                    autofocus
+                    onInput={(e) => setEditingName(e.currentTarget.value)}
+                    onBlur={commitRename}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitRename()
+                      if (e.key === 'Escape') setEditingId(null)
+                    }}
+                    style={{
+                      flex: '1', 'min-width': '0', background: 'var(--surface-1)',
+                      border: '1px solid var(--border-brand)', 'border-radius': 'var(--radius-sm)',
+                      padding: '2px 6px', 'font-size': '12px', color: 'var(--text-primary)',
+                      outline: 'none',
+                    }}
+                  />
+                </Show>
                 <button
                   onClick={() => { loadConfig(overlay.config); setName(overlay.name) }}
                   style={{
