@@ -1,8 +1,9 @@
 import { Show, For, createSignal, onCleanup, type Component } from 'solid-js'
-import type { LayoutConfig, WidgetStyle, TodoItem } from '../../shared/types'
+import type { LayoutConfig, WidgetStyle, TodoItem, StreamLabelItem, StreamLabelType } from '../../shared/types'
 import { builderConfig, setBuilderConfig } from '../store/builderConfigStore'
 import { applyConfigPatch } from '../../shared/applyConfigPatch'
 import { clientIdConfigured } from '../../shared/spotifyAuth'
+import { addAlert } from '../../shared/messageStore'
 
 // ── Sub-components ────────────────────────────────────────────────────────
 
@@ -98,6 +99,23 @@ const selectStyle = {
   outline: 'none', cursor: 'pointer', 'margin-bottom': '10px',
 }
 
+const STREAM_LABEL_OPTIONS: Array<{ value: StreamLabelType; label: string }> = [
+  { value: 'latestFollower', label: 'Latest Follower' },
+  { value: 'latestSub', label: 'Latest Sub' },
+  { value: 'latestGiftSub', label: 'Latest Gift Sub' },
+  { value: 'topGifter', label: 'Top Gifter' },
+  { value: 'followerCount', label: 'Follower Count' },
+  { value: 'subCount', label: 'Sub Count' },
+  { value: 'viewerCount', label: 'Viewer Count' },
+]
+
+const testAlertButtonStyle = {
+  flex: '1', background: 'rgba(134,59,255,0.12)', border: '1px solid var(--border-violet)',
+  'border-radius': 'var(--radius-sm)', padding: '5px 8px',
+  cursor: 'pointer', 'font-size': '11px', 'font-weight': '600',
+  color: 'var(--violet-300)',
+}
+
 const WidgetStyleForm: Component<Props> = (props) => {
   const widget = () => builderConfig.widgets[props.widgetKey] as WidgetStyle
 
@@ -160,6 +178,60 @@ const WidgetStyleForm: Component<Props> = (props) => {
         </div>
       </Show>
 
+      <Show when={props.widgetKey === 'alert'}>
+        <SectionLabel>Test Alerts</SectionLabel>
+        <div style={{ display: 'flex', gap: '6px', 'margin-bottom': '10px' }}>
+          <button
+            onClick={() => addAlert({ id: crypto.randomUUID(), platform: 'kick', type: 'follow', username: 'TestFollower', timestamp: Date.now() })}
+            title="Fire a fake follow alert to test the Alert Box"
+            style={testAlertButtonStyle}
+          >Follow</button>
+          <button
+            onClick={() => addAlert({ id: crypto.randomUUID(), platform: 'kick', type: 'subscription', username: 'TestSubscriber', monthsSubscribed: 3, timestamp: Date.now() })}
+            title="Fire a fake subscription alert to test the Alert Box"
+            style={testAlertButtonStyle}
+          >Sub</button>
+          <button
+            onClick={() => addAlert({ id: crypto.randomUUID(), platform: 'kick', type: 'gift_sub', username: 'TestGifter', quantityGifted: 5, giftedUsers: ['Fan1', 'Fan2', 'Fan3', 'Fan4', 'Fan5'], timestamp: Date.now() })}
+            title="Fire a fake gift-sub alert to test the Alert Box"
+            style={testAlertButtonStyle}
+          >Gift</button>
+        </div>
+
+        <SectionLabel>Media & Sound</SectionLabel>
+        <SliderField
+          label="Duration"
+          value={builderConfig.widgets.alert.alertDurationMs}
+          min={2000} max={15000} step={500} unit="ms"
+          onChange={(v) => applyConfigPatch(setBuilderConfig, { alert: { alertDurationMs: v } })}
+        />
+        <For each={[
+          { label: 'Follow', mediaField: 'followMediaUrl', soundField: 'followSoundUrl' },
+          { label: 'Subscription', mediaField: 'subMediaUrl', soundField: 'subSoundUrl' },
+          { label: 'Gift Sub', mediaField: 'giftMediaUrl', soundField: 'giftSoundUrl' },
+        ] as const}>
+          {(group) => (
+            <div style={{ 'margin-bottom': '10px' }}>
+              <span style={{ display: 'block', 'font-size': '11px', 'font-weight': '600', color: 'var(--text-tertiary)', 'margin-bottom': '5px' }}>{group.label}</span>
+              <input
+                type="url"
+                placeholder="Image or GIF URL"
+                style={{ width: '100%', 'margin-bottom': '5px', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none', 'box-sizing': 'border-box' }}
+                value={builderConfig.widgets.alert[group.mediaField]}
+                onInput={(e) => applyConfigPatch(setBuilderConfig, { alert: { [group.mediaField]: e.currentTarget.value } })}
+              />
+              <input
+                type="url"
+                placeholder="Sound URL"
+                style={{ width: '100%', background: 'var(--surface-2)', border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)', padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)', outline: 'none', 'box-sizing': 'border-box' }}
+                value={builderConfig.widgets.alert[group.soundField]}
+                onInput={(e) => applyConfigPatch(setBuilderConfig, { alert: { [group.soundField]: e.currentTarget.value } })}
+              />
+            </div>
+          )}
+        </For>
+      </Show>
+
       <Show when={props.widgetKey === 'recentEvents'}>
         <SectionLabel>Recent Events</SectionLabel>
         <SliderField
@@ -168,6 +240,55 @@ const WidgetStyleForm: Component<Props> = (props) => {
           min={1} max={10}
           onChange={(v) => applyConfigPatch(setBuilderConfig, { recentEvents: { maxItems: v } })}
         />
+      </Show>
+
+      <Show when={props.widgetKey === 'streamLabels'}>
+        <SectionLabel>Stream Labels</SectionLabel>
+        {(() => {
+          const [newType, setNewType] = createSignal<StreamLabelType>('latestFollower')
+          const addItem = () => {
+            const items: StreamLabelItem[] = [
+              ...builderConfig.widgets.streamLabels.items,
+              { id: crypto.randomUUID(), type: newType() },
+            ]
+            applyConfigPatch(setBuilderConfig, { streamLabels: { items } })
+          }
+          return (
+            <>
+              <div style={{ display: 'flex', gap: '6px', 'margin-bottom': '10px' }}>
+                <select
+                  style={{ ...selectStyle, flex: '1', 'margin-bottom': '0' }}
+                  value={newType()}
+                  onChange={(e) => setNewType(e.currentTarget.value as StreamLabelType)}
+                >
+                  {STREAM_LABEL_OPTIONS.map((opt) => <option value={opt.value}>{opt.label}</option>)}
+                </select>
+                <button
+                  onClick={addItem}
+                  style={{ 'flex-shrink': '0', padding: '5px 10px', 'border-radius': 'var(--radius-md)', border: 'none', cursor: 'pointer', 'font-size': '12px', 'font-weight': '600', background: 'var(--grad-brand)', color: '#fff' }}
+                >+</button>
+              </div>
+              <div style={{ display: 'flex', 'flex-direction': 'column', gap: '4px' }}>
+                <For each={builderConfig.widgets.streamLabels.items}>
+                  {(item) => (
+                    <div style={{ display: 'flex', 'align-items': 'center', gap: '6px', padding: '5px 8px', 'border-radius': 'var(--radius-sm)', background: 'var(--surface-2)', border: '1px solid var(--border-default)' }}>
+                      <span style={{ flex: '1', 'min-width': '0', 'font-size': '12px', color: 'var(--text-secondary)' }}>
+                        {STREAM_LABEL_OPTIONS.find(o => o.value === item.type)?.label}
+                      </span>
+                      <button
+                        onClick={() => {
+                          const items = builderConfig.widgets.streamLabels.items.filter(i => i.id !== item.id)
+                          applyConfigPatch(setBuilderConfig, { streamLabels: { items } })
+                        }}
+                        style={{ 'flex-shrink': '0', padding: '2px 6px', 'border-radius': 'var(--radius-sm)', border: '1px solid var(--border-default)', cursor: 'pointer', 'font-size': '11px', background: 'transparent', color: 'var(--text-muted)' }}
+                      >✕</button>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </>
+          )
+        })()}
       </Show>
 
       <Show when={props.widgetKey === 'followerGoal'}>
@@ -193,6 +314,32 @@ const WidgetStyleForm: Component<Props> = (props) => {
           value={builderConfig.widgets.followerGoal.goalTarget}
           min={10} max={10000} step={10}
           onChange={(v) => applyConfigPatch(setBuilderConfig, { followerGoal: { goalTarget: v } })}
+        />
+      </Show>
+
+      <Show when={props.widgetKey === 'subGoal'}>
+        <SectionLabel>Goal</SectionLabel>
+        <div style={{ 'margin-bottom': '10px' }}>
+          <span style={{ display: 'block', 'font-size': '12px', color: 'var(--text-secondary)', 'margin-bottom': '5px' }}>Label</span>
+          <input
+            type="text"
+            style={{
+              width: '100%', background: 'var(--surface-2)',
+              border: '1px solid var(--border-default)', 'border-radius': 'var(--radius-md)',
+              padding: '6px 10px', 'font-size': '12px', color: 'var(--text-primary)',
+              outline: 'none',
+            }}
+            value={builderConfig.widgets.subGoal.goalLabel}
+            onInput={(e) =>
+              applyConfigPatch(setBuilderConfig, { subGoal: { goalLabel: e.currentTarget.value } })
+            }
+          />
+        </div>
+        <SliderField
+          label="Target"
+          value={builderConfig.widgets.subGoal.goalTarget}
+          min={5} max={5000} step={5}
+          onChange={(v) => applyConfigPatch(setBuilderConfig, { subGoal: { goalTarget: v } })}
         />
       </Show>
 

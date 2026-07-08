@@ -14,9 +14,11 @@ import LinkOutput from './components/LinkOutput'
 import ChatBox from '../overlay/components/ChatBox'
 import AlertBox from '../overlay/components/AlertBox'
 import FollowerGoal from '../overlay/components/FollowerGoal'
+import SubGoal from '../overlay/components/SubGoal'
 import ViewerCount from '../overlay/components/ViewerCount'
 import SubCount from '../overlay/components/SubCount'
 import RecentEvents from '../overlay/components/RecentEvents'
+import StreamLabels from '../overlay/components/StreamLabels'
 import ClockWidget from '../overlay/components/ClockWidget'
 import CountdownTimer from '../overlay/components/CountdownTimer'
 import Ticker from '../overlay/components/Ticker'
@@ -214,16 +216,6 @@ const Builder: Component = () => {
           <div style={{ padding: '14px 14px 12px', 'border-bottom': '1px solid var(--border-default)' }}>
             <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '8px' }}>
               <span class="sl-eyebrow">Channel</span>
-              <button
-                onClick={() => addAlert({ id: crypto.randomUUID(), platform: 'kick', type: 'follow', username: 'TestUser', timestamp: Date.now() })}
-                title="Fire a fake follow alert to test the Alert Box"
-                style={{
-                  background: 'rgba(134,59,255,0.12)', border: '1px solid var(--border-violet)',
-                  'border-radius': 'var(--radius-sm)', padding: '2px 8px',
-                  cursor: 'pointer', 'font-size': '10px', 'font-weight': '600',
-                  color: 'var(--violet-300)',
-                }}
-              >Test Alert</button>
             </div>
             <div style={{
               display: 'flex', 'align-items': 'center',
@@ -327,9 +319,11 @@ const Builder: Component = () => {
               <ChatBox      style={builderConfig.widgets.chat} />
               <AlertBox     style={builderConfig.widgets.alert} />
               <FollowerGoal style={builderConfig.widgets.followerGoal} />
+              <SubGoal      style={builderConfig.widgets.subGoal} />
               <ViewerCount  style={builderConfig.widgets.viewerCount} />
               <SubCount     style={builderConfig.widgets.subCount} />
               <RecentEvents style={builderConfig.widgets.recentEvents} />
+              <StreamLabels style={builderConfig.widgets.streamLabels} />
               <ClockWidget  style={builderConfig.widgets.clock} />
               <CountdownTimer style={builderConfig.widgets.countdown} />
               <Ticker       style={builderConfig.widgets.ticker} />

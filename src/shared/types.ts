@@ -24,6 +24,25 @@ export interface TodoItem {
   done: boolean
 }
 
+export interface AlertMediaFields {
+  alertDurationMs: number
+  followMediaUrl: string
+  followSoundUrl: string
+  subMediaUrl: string
+  subSoundUrl: string
+  giftMediaUrl: string
+  giftSoundUrl: string
+}
+
+export type StreamLabelType =
+  | 'latestFollower' | 'latestSub' | 'latestGiftSub' | 'topGifter'
+  | 'followerCount' | 'subCount' | 'viewerCount'
+
+export interface StreamLabelItem {
+  id: string
+  type: StreamLabelType
+}
+
 export interface LayoutConfig {
   v: number
   kickChannelSlug?: string
@@ -31,11 +50,13 @@ export interface LayoutConfig {
   youtubeApiKey?: string   // not yet implemented
   widgets: {
     chat: WidgetStyle
-    alert: WidgetStyle
+    alert: WidgetStyle & AlertMediaFields
     followerGoal: WidgetStyle & { goalTarget: number; goalLabel: string }
+    subGoal: WidgetStyle & { goalTarget: number; goalLabel: string }
     viewerCount: WidgetStyle
     subCount: WidgetStyle
     recentEvents: WidgetStyle & { maxItems: number }
+    streamLabels: WidgetStyle & { items: StreamLabelItem[] }
     clock: WidgetStyle & { format: '12h' | '24h'; showSeconds: boolean }
     countdown: WidgetStyle & { targetDate: string; label: string; showDays: boolean }
     ticker: WidgetStyle & { items: string[]; speed: number }

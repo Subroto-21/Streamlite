@@ -17,12 +17,23 @@ export const DEFAULT_CONFIG: LayoutConfig = {
     alert: {
       ...DEFAULT_WIDGET_STYLE,
       x: 30, y: 5, width: 40, height: 14,
+      alertDurationMs: 5000,
+      followMediaUrl: '', followSoundUrl: '',
+      subMediaUrl: '', subSoundUrl: '',
+      giftMediaUrl: '', giftSoundUrl: '',
     },
     followerGoal: {
       ...DEFAULT_WIDGET_STYLE,
       x: 2, y: 78, width: 22, height: 9,
       goalTarget: 100,
       goalLabel: 'Follower Goal',
+    },
+    subGoal: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 2, y: 68, width: 22, height: 9,
+      goalTarget: 50,
+      goalLabel: 'Sub Goal',
     },
     viewerCount: {
       ...DEFAULT_WIDGET_STYLE,
@@ -38,6 +49,12 @@ export const DEFAULT_CONFIG: LayoutConfig = {
       enabled: false,
       x: 2, y: 20, width: 22, height: 30,
       maxItems: 5,
+    },
+    streamLabels: {
+      ...DEFAULT_WIDGET_STYLE,
+      enabled: false,
+      x: 75, y: 30, width: 20, height: 24,
+      items: [],
     },
     clock: {
       ...DEFAULT_WIDGET_STYLE,

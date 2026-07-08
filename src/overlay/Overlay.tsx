@@ -11,9 +11,11 @@ import { buildOverlayUrl, DEFAULT_CONFIG } from '../shared/stateEncoder'
 import ChatBox from './components/ChatBox'
 import AlertBox from './components/AlertBox'
 import FollowerGoal from './components/FollowerGoal'
+import SubGoal from './components/SubGoal'
 import ViewerCount from './components/ViewerCount'
 import SubCount from './components/SubCount'
 import RecentEvents from './components/RecentEvents'
+import StreamLabels from './components/StreamLabels'
 import ClockWidget from './components/ClockWidget'
 import CountdownTimer from './components/CountdownTimer'
 import Ticker from './components/Ticker'
@@ -106,9 +108,11 @@ const Overlay: Component = () => {
       <ChatBox style={config.widgets.chat} />
       <AlertBox style={config.widgets.alert} />
       <FollowerGoal style={config.widgets.followerGoal} />
+      <SubGoal style={config.widgets.subGoal} />
       <ViewerCount style={config.widgets.viewerCount} />
       <SubCount style={config.widgets.subCount} />
       <RecentEvents style={config.widgets.recentEvents} />
+      <StreamLabels style={config.widgets.streamLabels} />
       <ClockWidget style={config.widgets.clock} />
       <CountdownTimer style={config.widgets.countdown} />
       <Ticker style={config.widgets.ticker} />
