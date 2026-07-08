@@ -58,19 +58,7 @@ function OverlayLibrary() {
     <div style={{ 'border-bottom': '1px solid var(--border-default)' }}>
       {/* Save row */}
       <div style={{ padding: '10px 14px 8px' }}>
-        <div style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'space-between', 'margin-bottom': '8px' }}>
-          <span class="sl-eyebrow">Overlays</span>
-          <button
-            onClick={() => setShowGallery(true)}
-            title="Browse preset overlay looks"
-            style={{
-              background: 'rgba(134,59,255,0.12)', border: '1px solid var(--border-violet)',
-              'border-radius': 'var(--radius-sm)', padding: '2px 8px',
-              cursor: 'pointer', 'font-size': '10px', 'font-weight': '600',
-              color: 'var(--violet-300)',
-            }}
-          >Presets</button>
-        </div>
+        <span class="sl-eyebrow" style={{ display: 'block', 'margin-bottom': '8px' }}>Overlays</span>
         <div style={{ display: 'flex', gap: '6px' }}>
           <input
             type="text"
@@ -231,6 +219,31 @@ const Builder: Component = () => {
           background: 'var(--surface-1)',
           display: 'flex', 'flex-direction': 'column', overflow: 'hidden',
         }}>
+
+          {/* Preset gallery CTA — first thing a new user sees */}
+          <div style={{ padding: '14px 14px 0' }}>
+            <button
+              onClick={() => setShowGallery(true)}
+              style={{
+                width: '100%', display: 'flex', 'align-items': 'center', gap: '10px',
+                padding: '10px 12px', 'border-radius': 'var(--radius-md)', border: 'none',
+                cursor: 'pointer', background: 'var(--grad-brand)', color: '#fff',
+                'box-shadow': 'var(--glow-violet)',
+              }}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{ 'flex-shrink': '0' }}>
+                <circle cx="13.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="17.5" cy="10.5" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="8.5" cy="7.5" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="6.5" cy="12.5" r="1.5" fill="currentColor" stroke="none" />
+                <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-4 4 4 0 0 1-5-6z" />
+              </svg>
+              <span style={{ 'text-align': 'left', 'flex': '1', 'min-width': '0' }}>
+                <span style={{ display: 'block', 'font-size': '13px', 'font-weight': '700', 'line-height': '1.3' }}>Browse Presets</span>
+                <span style={{ display: 'block', 'font-size': '11px', opacity: '0.85', 'line-height': '1.3' }}>Start from a ready-made look</span>
+              </span>
+            </button>
+          </div>
 
           {/* Channel connect */}
           <div style={{ padding: '14px 14px 12px', 'border-bottom': '1px solid var(--border-default)' }}>
