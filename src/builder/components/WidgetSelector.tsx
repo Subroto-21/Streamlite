@@ -66,8 +66,8 @@ const WidgetSelector: Component<Props> = (props) => (
                 display: 'flex', 'align-items': 'center', gap: '7px',
                 padding: '7px 8px', 'border-radius': 'var(--radius-md)',
                 cursor: 'pointer', 'user-select': 'none',
-                background: active() ? 'rgba(134,59,255,0.14)' : 'var(--surface-2)',
-                border: `1px solid ${active() ? 'var(--border-violet)' : 'var(--border-default)'}`,
+                background: active() ? 'rgba(83,252,24,0.14)' : 'var(--surface-2)',
+                border: `1px solid ${active() ? 'var(--border-brand)' : 'var(--border-default)'}`,
                 transition: 'background var(--dur-base), border-color var(--dur-base)',
               }}
             >
@@ -76,8 +76,9 @@ const WidgetSelector: Component<Props> = (props) => (
                 display: 'inline-flex', 'flex-shrink': '0',
                 width: '20px', height: '20px', 'border-radius': '5px',
                 'align-items': 'center', 'justify-content': 'center',
-                background: active() ? 'var(--grad-brand)' : 'var(--surface-3)',
-                color: active() ? '#fff' : 'var(--text-tertiary)',
+                background: 'var(--surface-3)',
+                border: active() ? '1px solid var(--border-brand)' : 'none',
+                color: active() ? 'var(--green-500)' : 'var(--text-tertiary)',
               }} innerHTML={WIDGET_ICONS[w.key]} />
 
               {/* Label */}

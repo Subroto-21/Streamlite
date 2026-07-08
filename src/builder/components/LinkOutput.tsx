@@ -52,7 +52,7 @@ const LinkOutput: Component = () => {
     }}>
       <span style={{
         display: 'inline-flex', 'align-items': 'center', gap: '6px',
-        'font-size': '12px', 'font-weight': '500', color: 'var(--violet-400)',
+        'font-size': '12px', 'font-weight': '500', color: 'var(--brand-400)',
         'flex-shrink': '0', 'white-space': 'nowrap',
       }}>
         <BoltIcon />
@@ -90,8 +90,8 @@ const LinkOutput: Component = () => {
           'font-size': '13px', 'font-weight': '600',
           transition: 'background var(--dur-fast), box-shadow var(--dur-fast)',
           background: copied() ? 'var(--green-600)' : 'var(--grad-brand)',
-          color: copied() ? 'var(--text-on-green)' : 'var(--text-on-violet)',
-          'box-shadow': copied() ? 'var(--glow-green)' : 'var(--glow-violet)',
+          color: 'var(--text-on-green)',
+          'box-shadow': 'var(--glow-green)',
         }}
       >
         {copied() ? <CheckIcon /> : <CopyIcon />}

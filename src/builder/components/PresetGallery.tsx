@@ -70,9 +70,10 @@ const PresetGallery: Component<Props> = (props) => {
                 <button
                   onClick={() => props.onSelect(buildPresetConfig(preset))}
                   style={{
-                    padding: '7px', 'border-radius': 'var(--radius-md)', border: 'none',
+                    padding: '7px', 'border-radius': 'var(--radius-md)',
+                    border: '1px solid var(--border-brand)',
                     cursor: 'pointer', 'font-size': '12px', 'font-weight': '600',
-                    background: 'var(--grad-brand)', color: '#fff',
+                    background: 'transparent', color: 'var(--green-500)',
                   }}
                 >Use this</button>
               </div>

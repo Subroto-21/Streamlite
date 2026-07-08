@@ -75,11 +75,12 @@ function OverlayLibrary() {
           <button
             onClick={handleSave}
             style={{
-              'flex-shrink': '0', padding: '5px 12px',
-              'border-radius': 'var(--radius-md)', border: 'none',
+              'flex-shrink': '0', padding: '5px 12px', background: 'transparent',
+              'border-radius': 'var(--radius-md)',
+              border: `1px solid ${saved() ? 'var(--green-500)' : 'var(--border-brand)'}`,
               cursor: 'pointer', 'font-size': '12px', 'font-weight': '600',
-              background: saved() ? 'var(--green-600)' : 'var(--grad-brand)',
-              color: '#fff', transition: 'background var(--dur-fast)',
+              color: saved() ? 'var(--green-500)' : 'var(--brand-300)',
+              transition: 'border-color var(--dur-fast), color var(--dur-fast)',
             }}
           >{saved() ? '✓ Saved' : 'Save'}</button>
         </div>
@@ -105,9 +106,9 @@ function OverlayLibrary() {
                   onClick={() => { loadConfig(overlay.config); setName(overlay.name) }}
                   style={{
                     'flex-shrink': '0', padding: '3px 8px',
-                    'border-radius': 'var(--radius-sm)', border: '1px solid var(--border-violet)',
+                    'border-radius': 'var(--radius-sm)', border: '1px solid var(--border-brand)',
                     cursor: 'pointer', 'font-size': '11px', 'font-weight': '600',
-                    background: 'rgba(134,59,255,0.12)', color: 'var(--violet-300)',
+                    background: 'rgba(83,252,24,0.12)', color: 'var(--brand-300)',
                   }}
                 >Load</button>
                 <button
@@ -226,9 +227,9 @@ const Builder: Component = () => {
               onClick={() => setShowGallery(true)}
               style={{
                 width: '100%', display: 'flex', 'align-items': 'center', gap: '10px',
-                padding: '10px 12px', 'border-radius': 'var(--radius-md)', border: 'none',
-                cursor: 'pointer', background: 'var(--grad-brand)', color: '#fff',
-                'box-shadow': 'var(--glow-violet)',
+                padding: '10px 12px', 'border-radius': 'var(--radius-md)',
+                border: '1px solid var(--border-brand)',
+                cursor: 'pointer', background: 'transparent', color: 'var(--green-500)',
               }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style={{ 'flex-shrink': '0' }}>
@@ -295,7 +296,7 @@ const Builder: Component = () => {
             display: 'flex', 'align-items': 'center', 'justify-content': 'space-between',
           }}>
             <span class="sl-eyebrow">Customize</span>
-            <span style={{ 'font-size': '11px', 'font-weight': '600', color: 'var(--violet-400)' }}>
+            <span style={{ 'font-size': '11px', 'font-weight': '600', color: 'var(--brand-400)' }}>
               {selectedWidget()}
             </span>
           </div>
@@ -312,7 +313,6 @@ const Builder: Component = () => {
           flex: '1', 'min-width': '0',
           display: 'flex', 'flex-direction': 'column',
           background: 'var(--bg-canvas)',
-          'background-image': 'var(--grad-canvas-glow)',
           overflow: 'hidden',
         }}>
           {/* Top bar */}

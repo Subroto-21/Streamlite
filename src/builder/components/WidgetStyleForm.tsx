@@ -37,7 +37,7 @@ function SliderField(p: SliderProps) {
       </div>
       <input
         type="range"
-        style={{ width: '100%', 'accent-color': 'var(--violet-500)', cursor: 'pointer' }}
+        style={{ width: '100%', 'accent-color': 'var(--brand-500)', cursor: 'pointer' }}
         min={p.min} max={p.max} step={p.step ?? 1}
         value={p.value}
         onInput={(e) => p.onChange(+e.currentTarget.value)}
@@ -110,10 +110,10 @@ const STREAM_LABEL_OPTIONS: Array<{ value: StreamLabelType; label: string }> = [
 ]
 
 const testAlertButtonStyle = {
-  flex: '1', background: 'rgba(134,59,255,0.12)', border: '1px solid var(--border-violet)',
+  flex: '1', background: 'rgba(83,252,24,0.12)', border: '1px solid var(--border-brand)',
   'border-radius': 'var(--radius-sm)', padding: '5px 8px',
   cursor: 'pointer', 'font-size': '11px', 'font-weight': '600',
-  color: 'var(--violet-300)',
+  color: 'var(--brand-300)',
 }
 
 const WidgetStyleForm: Component<Props> = (props) => {
@@ -265,7 +265,7 @@ const WidgetStyleForm: Component<Props> = (props) => {
                 </select>
                 <button
                   onClick={addItem}
-                  style={{ 'flex-shrink': '0', padding: '5px 10px', 'border-radius': 'var(--radius-md)', border: 'none', cursor: 'pointer', 'font-size': '12px', 'font-weight': '600', background: 'var(--grad-brand)', color: '#fff' }}
+                  style={{ 'flex-shrink': '0', padding: '5px 10px', 'border-radius': 'var(--radius-md)', border: '1px solid var(--border-brand)', cursor: 'pointer', 'font-size': '12px', 'font-weight': '600', background: 'transparent', color: 'var(--green-500)' }}
                 >+</button>
               </div>
               <div style={{ display: 'flex', 'flex-direction': 'column', gap: '4px' }}>
@@ -463,7 +463,7 @@ const WidgetStyleForm: Component<Props> = (props) => {
                 />
                 <button
                   onClick={addItem}
-                  style={{ 'flex-shrink': '0', padding: '5px 10px', 'border-radius': 'var(--radius-md)', border: 'none', cursor: 'pointer', 'font-size': '12px', 'font-weight': '600', background: 'var(--grad-brand)', color: '#fff' }}
+                  style={{ 'flex-shrink': '0', padding: '5px 10px', 'border-radius': 'var(--radius-md)', border: '1px solid var(--border-brand)', cursor: 'pointer', 'font-size': '12px', 'font-weight': '600', background: 'transparent', color: 'var(--green-500)' }}
                 >+</button>
               </div>
               <div style={{ display: 'flex', 'flex-direction': 'column', gap: '4px' }}>
@@ -473,7 +473,7 @@ const WidgetStyleForm: Component<Props> = (props) => {
                       <input
                         type="checkbox"
                         checked={item.done}
-                        style={{ 'accent-color': 'var(--violet-500)', 'flex-shrink': '0' }}
+                        style={{ 'accent-color': 'var(--brand-500)', 'flex-shrink': '0' }}
                         onChange={() => {
                           const items = builderConfig.widgets.todoList.items.map(i => i.id === item.id ? { ...i, done: !i.done } : i)
                           applyConfigPatch(setBuilderConfig, { todoList: { items } })

@@ -3,16 +3,12 @@
 /* ── Streamlite design tokens ────────────────────────────────────────────── */
 
 :root {
-  /* Brand violet */
-  --violet-50:  #f3ecff;
-  --violet-100: #e4d4ff;
-  --violet-200: #cbb0ff;
-  --violet-300: #b08bff;
-  --violet-400: #9c6bff;
-  --violet-500: #863bff;
-  --violet-600: #7e14ff;
-  --violet-700: #6a0fd6;
-  --brand-blue: #4d7cff;
+  /* Brand — green, aliased from the Kick-native electric green below so the
+     Builder's brand accent and a widget's own default accent color share one
+     source of truth. */
+  --brand-300: var(--green-300);
+  --brand-400: var(--green-400);
+  --brand-500: var(--green-500);
 
   /* Electric green — live / energy */
   --green-300: #9dff74;
@@ -20,27 +16,27 @@
   --green-500: #53fc18;
   --green-600: #3dd60a;
 
-  /* Surfaces — near-black with violet cast */
-  --black:      #050308;
-  --bg-base:    #08060d;
-  --bg-canvas:  #0b0810;
-  --surface-1:  #110d18;
-  --surface-2:  #181320;
-  --surface-3:  #221b2e;
-  --surface-4:  #2d2540;
+  /* Surfaces — true near-black, matching the marketing pages' canvas */
+  --black:      #0e100f;
+  --bg-base:    #0e100f;
+  --bg-canvas:  #121412;
+  --surface-1:  #191919;
+  --surface-2:  #212120;
+  --surface-3:  #2a2a28;
+  --surface-4:  #343432;
 
-  /* Borders */
-  --border-subtle:  rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.10);
-  --border-strong:  rgba(255, 255, 255, 0.16);
-  --border-violet:  rgba(134, 59, 255, 0.45);
+  /* Borders — warm cream-tinted alpha instead of pure white */
+  --border-subtle:  rgba(255, 252, 225, 0.06);
+  --border-default: rgba(255, 252, 225, 0.10);
+  --border-strong:  rgba(255, 252, 225, 0.16);
+  --border-brand:   rgba(83, 252, 24, 0.45);
 
-  /* Text */
-  --text-primary:   #f5f2fb;
-  --text-secondary: #b6aecb;
-  --text-tertiary:  #847c98;
-  --text-muted:     #5a5470;
-  --text-on-violet: #ffffff;
+  /* Text — warm cream scale */
+  --text-primary:   #fffce1;
+  --text-secondary: #c7c4b3;
+  --text-tertiary:  #928f80;
+  --text-muted:     #5c5a4d;
+  --text-on-brand:  #07210a;
   --text-on-green:  #07210a;
 
   /* Status */
@@ -55,19 +51,16 @@
   --youtube: #ff0033;
 
   /* Glows */
-  --glow-violet: 0 0 0 1px rgba(134,59,255,0.35), 0 8px 40px -8px rgba(134,59,255,0.55);
-  --glow-green:  0 0 0 1px rgba(83,252,24,0.30), 0 8px 36px -10px rgba(83,252,24,0.50);
+  --glow-brand: 0 0 0 1px rgba(83,252,24,0.30), 0 8px 36px -10px rgba(83,252,24,0.50);
+  --glow-green: 0 0 0 1px rgba(83,252,24,0.30), 0 8px 36px -10px rgba(83,252,24,0.50);
 
   /* Gradients */
-  --grad-brand:        linear-gradient(135deg, #863bff 0%, #4d7cff 100%);
-  --grad-brand-vivid:  linear-gradient(135deg, #9c6bff 0%, #863bff 45%, #4d7cff 100%);
-  --grad-live:         linear-gradient(135deg, #53fc18 0%, #3dd60a 100%);
-  --grad-surface:      linear-gradient(180deg, #181320 0%, #110d18 100%);
-  --grad-canvas-glow:  radial-gradient(120% 80% at 50% -10%, rgba(134,59,255,0.16) 0%, rgba(8,6,13,0) 60%);
+  --grad-brand: linear-gradient(135deg, #53fc18 0%, #3dd60a 100%);
+  --grad-live:  linear-gradient(135deg, #53fc18 0%, #3dd60a 100%);
 
   /* Semantic aliases */
-  --brand:           var(--violet-500);
-  --brand-strong:    var(--violet-600);
+  --brand:           var(--brand-500);
+  --brand-strong:    var(--green-600);
   --accent-live:     var(--green-500);
   --bg-app:          var(--bg-base);
   --surface-card:    var(--surface-1);
@@ -79,8 +72,8 @@
   --text-faint:      var(--text-muted);
 
   /* Typography */
-  --font-display: 'Space Grotesk', 'Inter', system-ui, sans-serif;
-  --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    'DM Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono:    'Fira Code', 'SF Mono', 'Courier New', monospace;
 
   /* Type scale */
@@ -125,7 +118,7 @@
 
 /* ── Base reset ──────────────────────────────────────────────────────────── */
 
-::selection { background: rgba(134,59,255,0.40); color: #fff; }
+::selection { background: rgba(83,252,24,0.40); color: #0e100f; }
 
 /* ── Utility classes ─────────────────────────────────────────────────────── */
 
@@ -138,13 +131,6 @@
   color: var(--text-tertiary);
 }
 
-.sl-grad-text {
-  background: var(--grad-brand-vivid);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
 .sl-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--surface-3) transparent;
@@ -155,12 +141,12 @@
 
 /* Checkerboard = OBS transparent canvas */
 .sl-checkerboard {
-  background-color: #0d0a14;
+  background-color: #0e100f;
   background-image:
-    linear-gradient(45deg, #15101f 25%, transparent 25%),
-    linear-gradient(-45deg, #15101f 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #15101f 75%),
-    linear-gradient(-45deg, transparent 75%, #15101f 75%);
+    linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+    linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+    linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
   background-size: 22px 22px;
   background-position: 0 0, 0 11px, 11px -11px, -11px 0;
 }
