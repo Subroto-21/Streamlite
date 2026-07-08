@@ -198,3 +198,46 @@
 .anim-bounce { animation: bounceIn 0.4s  ease forwards; }
 .anim-exit   { animation: fadeOut  0.2s  ease forwards; }
 .anim-pulse  { animation: livePulse 2s ease-in-out infinite; }
+
+/* ── Marketing design tokens (Landing / Support / Feature Request only) ────
+   Additive — never referenced by Builder or Overlay components, so the
+   existing violet, surface and green tool tokens above are untouched. */
+
+:root {
+  /* Colors */
+  --mkt-canvas:     #0e100f;
+  --mkt-cream:      #fffce1;
+  --mkt-muted:      #7c7c6f;
+  --mkt-hairline:   #42433d;
+  --mkt-offblack:   #191919;
+  --mkt-green:       #0ae448;
+  --mkt-green-light: #abff84;
+  --mkt-grad-green:  linear-gradient(114.41deg, #0ae448 20.74%, #abff84 65.5%);
+  --mkt-orange:     #ff8709;
+  --mkt-pink:       #fec5fb;
+  --mkt-lilac:      #9d95ff;
+  --mkt-blue:       #00bae2;
+
+  /* Font */
+  --mkt-font: 'DM Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Type scale — size / line-height / letter-spacing */
+  --mkt-text-caption:    14px; --mkt-lh-caption:    1.4;  --mkt-ls-caption:    -0.14px;
+  --mkt-text-body-sm:    16px; --mkt-lh-body-sm:    1.15; --mkt-ls-body-sm:    normal;
+  --mkt-text-body:       19px; --mkt-lh-body:       1.15; --mkt-ls-body:       normal;
+  --mkt-text-body-lg:    23px; --mkt-lh-body-lg:    1.38; --mkt-ls-body-lg:    -0.23px;
+  --mkt-text-subheading: 34px; --mkt-lh-subheading: 1.2;  --mkt-ls-subheading: -0.34px;
+  --mkt-text-heading-sm: 44px; --mkt-lh-heading-sm: 1.2;  --mkt-ls-heading-sm: -0.44px;
+  --mkt-text-heading:    66px; --mkt-lh-heading:    1.2;  --mkt-ls-heading:    -0.66px;
+  --mkt-text-heading-lg: 101px;--mkt-lh-heading-lg: 1;    --mkt-ls-heading-lg: -1.11px;
+  --mkt-text-display:    224px;--mkt-lh-display:    0.9;  --mkt-ls-display:    -4.48px;
+
+  /* Radius */
+  --mkt-radius-pill: 100px;
+  --mkt-radius-card: 8px;
+
+  /* Spacing */
+  --mkt-space-8: 8px;   --mkt-space-12: 12px; --mkt-space-16: 16px;
+  --mkt-space-20: 20px; --mkt-space-24: 24px; --mkt-space-32: 32px;
+  --mkt-space-76: 76px; --mkt-space-96: 96px; --mkt-space-108: 108px;
+}

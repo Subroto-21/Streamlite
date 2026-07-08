@@ -1,120 +1,52 @@
 import { For, type Component } from 'solid-js'
+import Nav from '../shared/marketing/Nav'
+import Pill from '../shared/marketing/Pill'
+import Eyebrow from '../shared/marketing/Eyebrow'
 
 // ── Icons ─────────────────────────────────────────────────────────────────
 
-const IconArrow = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M5 12h14M13 6l6 6-6 6"/>
-  </svg>
-)
-
 const IconCheck = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M20 6 9 17l-5-5"/>
+    <path d="M20 6 9 17l-5-5" />
   </svg>
 )
 
 const IconBolt = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z"/>
+    <path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12z" />
   </svg>
 )
 
-// ── Shared button styles ──────────────────────────────────────────────────
+// ── Category color-coding — GSAP's discipline-label taxonomy, reused for
+// Streamlite's own widget/feature groupings. Green stays reserved for the
+// brand/CTA gradient stroke, never used here. ──────────────────────────────
 
-function Btn(p: {
-  children: unknown
-  variant?: 'primary' | 'secondary' | 'ghost'
-  size?: 'sm' | 'md' | 'lg'
-  href?: string
-  onClick?: () => void
-  iconRight?: boolean
-  fullWidth?: boolean
-}) {
-  const size = p.size ?? 'md'
-  const variant = p.variant ?? 'primary'
+type Category = 'chat' | 'alerts' | 'info' | 'integration'
 
-  const pad = size === 'lg' ? '12px 26px' : size === 'sm' ? '6px 14px' : '9px 20px'
-  const fontSize = size === 'lg' ? '16px' : size === 'sm' ? '13px' : '14px'
-
-  const base: Record<string, string> = {
-    display: 'inline-flex', 'align-items': 'center', gap: '7px',
-    padding: pad, 'border-radius': 'var(--radius-md)', border: 'none',
-    cursor: 'pointer', 'font-size': fontSize, 'font-weight': '600',
-    'font-family': 'var(--font-sans)', transition: 'filter var(--dur-fast), box-shadow var(--dur-fast)',
-    'text-decoration': 'none', 'white-space': 'nowrap',
-    width: p.fullWidth ? '100%' : undefined as unknown as string,
-    'justify-content': p.fullWidth ? 'center' : 'flex-start',
-  }
-
-  if (variant === 'primary') {
-    base.background = 'var(--grad-brand)'
-    base.color = '#fff'
-    base['box-shadow'] = 'var(--glow-violet)'
-  } else if (variant === 'secondary') {
-    base.background = 'var(--surface-2)'
-    base.color = 'var(--text-primary)'
-    base.border = '1px solid var(--border-default)'
-  } else {
-    base.background = 'transparent'
-    base.color = 'var(--text-secondary)'
-    base.border = '1px solid transparent'
-  }
-
-  const el = p.href ? 'a' : 'button'
-  return <Dynamic component={el} href={p.href} onClick={p.onClick} style={base}>{p.children}{p.iconRight && <IconArrow />}</Dynamic>
+const CATEGORY_COLOR: Record<Category, string> = {
+  chat: 'var(--mkt-pink)',
+  alerts: 'var(--mkt-orange)',
+  info: 'var(--mkt-lilac)',
+  integration: 'var(--mkt-blue)',
 }
 
-// Simple dynamic component helper
-function Dynamic(p: { component: string; href?: string; onClick?: () => void; style: Record<string, string>; children: unknown }) {
-  if (p.component === 'a') {
-    return <a href={p.href ?? '#'} style={p.style}>{p.children as any}</a>
-  }
-  return <button onClick={p.onClick} style={p.style}>{p.children as any}</button>
+const CATEGORY_LABEL: Record<Category, string> = {
+  chat: 'Chat',
+  alerts: 'Alerts',
+  info: 'Info',
+  integration: 'Integration',
 }
 
-// ── Nav ───────────────────────────────────────────────────────────────────
+// ── Showcase Card — near-black surface, 8px radius, no border/shadow ──────
 
-function Nav() {
-  const links = [
-    { label: 'Features', href: '#features' },
-    { label: 'Widgets', href: '#widgets' },
-    { label: 'Support', href: '/support.html' },
-    { label: 'Feature Request', href: '/feature-request.html' },
-  ]
+function ShowcaseCard(p: { children: unknown; style?: Record<string, string> }) {
   return (
-    <nav style={{
-      position: 'sticky', top: '0', 'z-index': '20',
-      display: 'flex', 'align-items': 'center', 'justify-content': 'space-between',
-      padding: '0 32px', height: '60px',
-      'border-bottom': '1px solid var(--border-subtle)',
-      background: 'rgba(8,6,13,0.80)', 'backdrop-filter': 'blur(14px)',
+    <div style={{
+      background: 'var(--mkt-offblack)', 'border-radius': 'var(--mkt-radius-card)',
+      padding: '24px', ...p.style,
     }}>
-      <a href="/" style={{ display: 'flex', 'align-items': 'center', gap: '10px', 'text-decoration': 'none' }}>
-        <img src="/logo-mark.svg" alt="" style={{ width: '26px', height: '26px' }} />
-        <span style={{
-          'font-family': 'var(--font-display)', 'font-size': '19px',
-          'font-weight': '700', 'letter-spacing': '-0.02em', color: 'var(--text-primary)',
-        }}>Streamlite</span>
-      </a>
-
-      <div style={{ display: 'flex', 'align-items': 'center', gap: '28px' }}>
-        <For each={links}>
-          {(l) => (
-            <a href={l.href} style={{
-              'font-size': '14px', color: 'var(--text-tertiary)',
-              'font-weight': '500', 'text-decoration': 'none',
-              transition: 'color var(--dur-fast)',
-            }}
-              onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
-              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-tertiary)'}
-            >{l.label}</a>
-          )}
-        </For>
-      </div>
-
-      <Btn size="sm" href="/builder.html" iconRight>Start free</Btn>
-    </nav>
+      {p.children as any}
+    </div>
   )
 }
 
@@ -124,20 +56,19 @@ function ProductCanvas() {
   return (
     <div class="sl-checkerboard" style={{
       position: 'relative', width: '100%', 'aspect-ratio': '16 / 9',
-      'border-radius': 'var(--radius-2xl)', overflow: 'hidden',
-      border: '1px solid var(--border-strong)',
-      'box-shadow': '0 40px 90px -30px rgba(0,0,0,0.8), var(--glow-violet)',
+      'border-radius': 'var(--mkt-radius-card)', overflow: 'hidden',
+      border: '1px solid var(--mkt-hairline)',
     }}>
       {/* Viewer count widget */}
       <div style={{
         position: 'absolute', left: '4%', top: '6%',
-        background: 'rgba(11,8,16,0.72)', 'backdrop-filter': 'blur(8px)',
+        background: 'rgba(14,16,15,0.8)', 'backdrop-filter': 'blur(8px)',
         'border-radius': '14px', padding: '7px 14px',
         display: 'flex', 'align-items': 'center', gap: '7px',
-        color: '#ece7f6', 'font-size': '13px', 'font-weight': '500',
-        border: '1px solid rgba(255,255,255,0.08)',
+        color: 'var(--mkt-cream)', 'font-size': '13px', 'font-weight': '500',
+        border: '1px solid var(--mkt-hairline)',
       }}>
-        <span style={{ color: '#ff4d63' }}>●</span>
+        <span style={{ color: 'var(--mkt-lilac)' }}>●</span>
         1,284 watching
       </div>
 
@@ -145,36 +76,36 @@ function ProductCanvas() {
       <div style={{
         position: 'absolute', left: '50%', top: '9%',
         transform: 'translateX(-50%)',
-        background: 'rgba(11,8,16,0.70)', 'backdrop-filter': 'blur(8px)',
+        background: 'rgba(14,16,15,0.8)', 'backdrop-filter': 'blur(8px)',
         'border-radius': '16px', padding: '11px 24px', 'text-align': 'center',
-        border: '1px solid rgba(255,255,255,0.08)',
+        border: '1px solid var(--mkt-hairline)',
       }}>
         <span style={{
-          'font-family': 'var(--font-display)', 'font-weight': '700',
-          color: '#53fc18', 'font-size': '17px',
+          'font-family': 'var(--mkt-font)', 'font-weight': '700',
+          color: 'var(--mkt-green)', 'font-size': '17px',
         }}>Mira_Vex just subscribed!</span>
       </div>
 
       {/* Chat widget */}
       <div style={{
         position: 'absolute', left: '4%', bottom: '7%', width: '30%',
-        background: 'rgba(8,6,13,0.72)', 'backdrop-filter': 'blur(8px)',
+        background: 'rgba(14,16,15,0.8)', 'backdrop-filter': 'blur(8px)',
         'border-radius': '14px', padding: '11px 14px',
         display: 'flex', 'flex-direction': 'column', gap: '7px',
-        color: '#ece7f6', 'font-size': '13px',
-        border: '1px solid rgba(255,255,255,0.08)',
+        color: 'var(--mkt-cream)', 'font-size': '13px',
+        border: '1px solid var(--mkt-hairline)',
       }}>
-        <div><span style={{ color: '#53fc18', 'font-weight': '600' }}>novareign</span>: this overlay is so clean 🔥</div>
-        <div><span style={{ color: '#9c6bff', 'font-weight': '600' }}>kaistrom</span>: what tool is that??</div>
-        <div><span style={{ color: '#4d7cff', 'font-weight': '600' }}>pixelwave</span>: built it in 2 min lol</div>
+        <div><span style={{ color: 'var(--mkt-pink)', 'font-weight': '600' }}>novareign</span>: this overlay is so clean 🔥</div>
+        <div><span style={{ color: 'var(--mkt-lilac)', 'font-weight': '600' }}>kaistrom</span>: what tool is that??</div>
+        <div><span style={{ color: 'var(--mkt-blue)', 'font-weight': '600' }}>pixelwave</span>: built it in 2 min lol</div>
       </div>
 
       {/* Follower goal widget */}
       <div style={{
         position: 'absolute', right: '4%', bottom: '7%', width: '28%',
-        background: 'rgba(8,6,13,0.72)', 'backdrop-filter': 'blur(8px)',
-        'border-radius': '14px', padding: '11px 14px', color: '#ece7f6',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'rgba(14,16,15,0.8)', 'backdrop-filter': 'blur(8px)',
+        'border-radius': '14px', padding: '11px 14px', color: 'var(--mkt-cream)',
+        border: '1px solid var(--mkt-hairline)',
       }}>
         <div style={{
           display: 'flex', 'justify-content': 'space-between',
@@ -183,10 +114,10 @@ function ProductCanvas() {
           <span>Follower goal</span><span>340 / 500</span>
         </div>
         <div style={{
-          height: '8px', background: 'rgba(255,255,255,0.12)',
+          height: '8px', background: 'var(--mkt-hairline)',
           'border-radius': '4px', overflow: 'hidden',
         }}>
-          <div style={{ width: '68%', height: '100%', background: '#863bff', 'border-radius': '4px' }} />
+          <div style={{ width: '68%', height: '100%', background: 'var(--mkt-orange)', 'border-radius': '4px' }} />
         </div>
       </div>
     </div>
@@ -199,40 +130,38 @@ function Hero() {
   return (
     <section style={{
       position: 'relative', padding: '72px 32px 48px',
-      'max-width': '1320px', margin: '0 auto', 'text-align': 'center',
+      'max-width': '1280px', margin: '0 auto', 'text-align': 'center',
     }}>
-      <div style={{ display: 'inline-flex', 'align-items': 'center', gap: '8px', 'margin-bottom': '24px' }}>
-        <span style={{
-          display: 'inline-flex', 'align-items': 'center', gap: '6px',
-          'font-size': '12px', 'font-weight': '500', color: 'var(--violet-400)',
-          background: 'rgba(134,59,255,0.12)', padding: '5px 12px',
-          'border-radius': 'var(--radius-pill)', border: '1px solid var(--border-violet)',
-        }}>
-          No installs · works in OBS, Streamlabs & more
-        </span>
+      <div style={{ 'margin-bottom': '24px' }}>
+        <Eyebrow>No installs · works in OBS, Streamlabs & more</Eyebrow>
       </div>
 
+      {/* Edge-bleeding display headline — no max-width cap on the h1 itself,
+          only the section column is constrained, per DESIGN.md's Hero
+          Display Headline spec. Size is clamped well below the doc's literal
+          224px so the layout survives real viewports with a subhead, two
+          CTAs, and a product screenshot below it. */}
       <h1 style={{
-        'font-size': 'clamp(38px, 6vw, 72px)', 'font-weight': '700',
-        'letter-spacing': '-0.035em', 'line-height': '1.02',
-        color: 'var(--text-primary)', 'max-width': '880px', margin: '0 auto',
-        'font-family': 'var(--font-display)',
+        'font-size': 'clamp(40px, 8vw, 128px)', 'font-weight': '600',
+        'letter-spacing': '-0.02em', 'line-height': '0.95',
+        color: 'var(--mkt-cream)', margin: '0 auto',
+        'font-family': 'var(--mkt-font)',
       }}>
         Stream brighter.<br />
-        <span class="sl-grad-text">Overlays that look pro</span> in minutes.
+        <span style={{ color: 'var(--mkt-green)' }}>Overlays that look pro</span> in minutes.
       </h1>
 
       <p style={{
-        'font-size': '19px', color: 'var(--text-secondary)',
-        'max-width': '600px', margin: '22px auto 0', 'line-height': '1.6',
+        'font-size': 'var(--mkt-text-body-lg)', color: 'var(--mkt-muted)',
+        'max-width': '600px', margin: '22px auto 0', 'line-height': 'var(--mkt-lh-body-lg)',
       }}>
         Pick your widgets, position them on a live 16:9 canvas, tune them to your brand,
         copy one link into your broadcaster, and go live. Free to start — no account required.
       </p>
 
       <div style={{ display: 'flex', gap: '12px', 'justify-content': 'center', 'margin-top': '32px', 'flex-wrap': 'wrap' }}>
-        <Btn size="lg" href="/builder.html" iconRight>Build your overlay</Btn>
-        <Btn size="lg" variant="secondary" href="/builder.html">Open builder</Btn>
+        <Pill size="lg" variant="primary" href="/builder.html" iconRight>Build your overlay</Pill>
+        <Pill size="lg" variant="outline" href="/builder.html">Open builder</Pill>
       </div>
 
       <div style={{ 'margin-top': '56px' }}>
@@ -244,59 +173,48 @@ function Hero() {
 
 // ── Features ──────────────────────────────────────────────────────────────
 
-const FEATURES = [
-  { title: 'Live visual builder',      desc: 'Position every widget on a live 16:9 canvas using precise controls. What you see is exactly what your viewers get.', accent: '#863bff' },
-  { title: 'Themeable to your brand', desc: 'Colors, fonts, opacity, corner radius and entrance animations — per widget, in real time.',   accent: '#4d7cff' },
-  { title: 'One link, any broadcaster', desc: 'Copy a single overlay URL into OBS, Streamlabs or Twitch Studio as a browser source.',      accent: '#53fc18' },
-  { title: 'Chat-command control',    desc: 'Show or hide widgets mid-stream with !overlay commands — no alt-tabbing away.',               accent: '#863bff' },
-  { title: 'Alerts that pop',         desc: 'Follows, subs and gifted subs with fade, slide and bounce animations out of the box.',        accent: '#ff8a3d' },
-  { title: 'Goals & hype',            desc: 'Follower goals with animated progress bars to rally your community toward the next milestone.', accent: '#53fc18' },
+const FEATURES: Array<{ title: string; desc: string; category: Category }> = [
+  { title: 'Live visual builder',      desc: 'Position every widget on a live 16:9 canvas using precise controls. What you see is exactly what your viewers get.', category: 'info' },
+  { title: 'Themeable to your brand',  desc: 'Colors, fonts, opacity, corner radius and entrance animations — per widget, in real time.',   category: 'info' },
+  { title: 'One link, any broadcaster', desc: 'Copy a single overlay URL into OBS, Streamlabs or Twitch Studio as a browser source.',      category: 'integration' },
+  { title: 'Chat-command control',     desc: 'Show or hide widgets mid-stream with !overlay commands — no alt-tabbing away.',               category: 'chat' },
+  { title: 'Alerts that pop',          desc: 'Follows, subs and gifted subs with fade, slide and bounce animations out of the box.',        category: 'alerts' },
+  { title: 'Goals & hype',             desc: 'Follower goals with animated progress bars to rally your community toward the next milestone.', category: 'alerts' },
 ]
 
 function Features() {
   return (
-    <section id="features" style={{ 'max-width': '1200px', margin: '0 auto', padding: '24px 32px 72px' }}>
-      <div style={{ 'text-align': 'center', 'margin-bottom': '44px' }}>
-        <div class="sl-eyebrow" style={{ 'margin-bottom': '12px' }}>Everything you need</div>
+    <section id="features" style={{ 'max-width': '1280px', margin: '0 auto', padding: '32px 32px 76px' }}>
+      <div style={{ 'margin-bottom': '32px' }}>
+        <Eyebrow>Why Streamlite</Eyebrow>
         <h2 style={{
-          'font-size': 'clamp(26px, 4vw, 40px)', 'font-weight': '700',
-          'letter-spacing': '-0.03em', color: 'var(--text-primary)',
-          'font-family': 'var(--font-display)',
+          'font-size': 'var(--mkt-text-heading-sm)', 'font-weight': '600',
+          'letter-spacing': 'var(--mkt-ls-heading-sm)', color: 'var(--mkt-cream)',
+          'font-family': 'var(--mkt-font)', margin: '8px 0 0',
         }}>Built for every kind of streamer</h2>
       </div>
       <div style={{ display: 'grid', 'grid-template-columns': 'repeat(3, 1fr)', gap: '16px' }}>
         <For each={FEATURES}>
           {(f) => (
-            <div
-              style={{
-                background: 'var(--grad-surface)', 'border-radius': 'var(--radius-xl)',
-                border: '1px solid var(--border-default)', padding: '24px',
-                transition: 'transform var(--dur-base), border-color var(--dur-base), box-shadow var(--dur-base)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px)'
-                e.currentTarget.style.borderColor = 'var(--border-violet)'
-                e.currentTarget.style.boxShadow = 'var(--glow-violet)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.borderColor = 'var(--border-default)'
-                e.currentTarget.style.boxShadow = 'none'
-              }}
-            >
+            <ShowcaseCard>
               <div style={{
-                width: '40px', height: '40px', 'border-radius': '11px',
+                width: '40px', height: '40px', 'border-radius': '10px',
                 display: 'flex', 'align-items': 'center', 'justify-content': 'center',
-                background: f.accent + '22', color: f.accent, 'margin-bottom': '16px',
+                background: 'rgba(255,252,225,0.06)', color: CATEGORY_COLOR[f.category], 'margin-bottom': '16px',
               }}>
                 <IconBolt />
               </div>
+              <span style={{
+                display: 'block', 'font-size': '13px', 'font-weight': '600',
+                color: CATEGORY_COLOR[f.category], 'margin-bottom': '6px',
+                'font-family': 'var(--mkt-font)',
+              }}>{CATEGORY_LABEL[f.category]}</span>
               <h3 style={{
-                'font-size': '16px', 'font-weight': '600', color: 'var(--text-primary)',
-                'margin-bottom': '8px', 'font-family': 'var(--font-display)',
+                'font-size': '17px', 'font-weight': '600', color: 'var(--mkt-cream)',
+                'margin-bottom': '8px', 'font-family': 'var(--mkt-font)',
               }}>{f.title}</h3>
-              <p style={{ 'font-size': '14px', color: 'var(--text-tertiary)', 'line-height': '1.55' }}>{f.desc}</p>
-            </div>
+              <p style={{ 'font-size': '15px', color: 'var(--mkt-muted)', 'line-height': '1.55' }}>{f.desc}</p>
+            </ShowcaseCard>
           )}
         </For>
       </div>
@@ -306,144 +224,69 @@ function Features() {
 
 // ── Widgets showcase ──────────────────────────────────────────────────────
 
-const WIDGETS = [
-  {
-    name: 'Chat Box',
-    emoji: '💬',
-    desc: 'Live Kick chat displayed over your stream. Fully styled, scrollable, and chat-command aware.',
-    accent: '#863bff',
-  },
-  {
-    name: 'Alert Box',
-    emoji: '🔔',
-    desc: 'Pop-up notifications for new followers, subscribers, and gifted subs — with smooth animations.',
-    accent: '#ff8a3d',
-  },
-  {
-    name: 'Follower Goal',
-    emoji: '🎯',
-    desc: 'Animated progress bar showing your community how close you are to the next milestone.',
-    accent: '#53fc18',
-  },
-  {
-    name: 'Viewer Count',
-    emoji: '👁️',
-    desc: 'Live viewer count pulled from Kick. A quiet but powerful social proof widget.',
-    accent: '#ff4d63',
-  },
-  {
-    name: 'Sub Count',
-    emoji: '⭐',
-    desc: 'Display your total subscriber count. Great for celebrating growth milestones mid-stream.',
-    accent: '#ffd700',
-  },
-  {
-    name: 'Countdown Timer',
-    emoji: '⏱️',
-    desc: 'Customisable countdown for stream start, segment end, or any timed event you want to hype.',
-    accent: '#4d7cff',
-  },
-  {
-    name: 'Clock',
-    emoji: '🕐',
-    desc: 'Real-time clock in your choice of timezone. Useful for international audiences.',
-    accent: '#863bff',
-  },
-  {
-    name: 'Date & Time',
-    emoji: '📅',
-    desc: 'Full date and time display with flexible formatting options for any locale.',
-    accent: '#4d7cff',
-  },
-  {
-    name: 'Ticker',
-    emoji: '📰',
-    desc: 'A horizontal scrolling ticker for announcements, social handles, or sponsor shoutouts.',
-    accent: '#ff8a3d',
-  },
-  {
-    name: 'Todo List',
-    emoji: '✅',
-    desc: "Show your stream's to-do list on screen. Knock items off live and keep chat engaged.",
-    accent: '#53fc18',
-  },
-  {
-    name: 'Recent Events',
-    emoji: '📋',
-    desc: 'A live log of recent follows and subscriptions — keeps the energy high between alerts.',
-    accent: '#863bff',
-  },
-  {
-    name: 'QR Code',
-    emoji: '📷',
-    desc: 'Auto-generated QR code from any URL. Perfect for pointing viewers to socials or a link-in-bio.',
-    accent: '#4d7cff',
-  },
-  {
-    name: 'Spotify',
-    emoji: '🎵',
-    desc: 'Shows your currently playing track in Spotify Green. One-click OAuth — no API key needed.',
-    accent: '#1DB954',
-  },
+const WIDGETS: Array<{ name: string; emoji: string; desc: string; category: Category }> = [
+  { name: 'Chat Box', emoji: '💬', desc: 'Live Kick chat displayed over your stream. Fully styled, scrollable, and chat-command aware.', category: 'chat' },
+  { name: 'Alert Box', emoji: '🔔', desc: 'Pop-up notifications for new followers, subscribers, and gifted subs — with smooth animations.', category: 'alerts' },
+  { name: 'Follower / Sub Goal', emoji: '🎯', desc: 'Animated progress bars showing your community how close you are to the next milestone.', category: 'alerts' },
+  { name: 'Viewer Count', emoji: '👁️', desc: 'Live viewer count pulled from Kick. A quiet but powerful social proof widget.', category: 'info' },
+  { name: 'Sub Count', emoji: '⭐', desc: 'Display your total subscriber count. Great for celebrating growth milestones mid-stream.', category: 'info' },
+  { name: 'Countdown Timer', emoji: '⏱️', desc: 'Customisable countdown for stream start, segment end, or any timed event you want to hype.', category: 'info' },
+  { name: 'Clock', emoji: '🕐', desc: 'Real-time clock in your choice of timezone. Useful for international audiences.', category: 'info' },
+  { name: 'Date & Time', emoji: '📅', desc: 'Full date and time display with flexible formatting options for any locale.', category: 'info' },
+  { name: 'Ticker', emoji: '📰', desc: 'A horizontal scrolling ticker for announcements, social handles, or sponsor shoutouts.', category: 'chat' },
+  { name: 'Todo List', emoji: '✅', desc: "Show your stream's to-do list on screen. Knock items off live and keep chat engaged.", category: 'info' },
+  { name: 'Recent Events', emoji: '📋', desc: 'A live log of recent follows and subscriptions — keeps the energy high between alerts.', category: 'chat' },
+  { name: 'Stream Labels', emoji: '🏷️', desc: 'Latest follower, latest sub, top gifter, follower/sub/viewer counts — pick and arrange.', category: 'alerts' },
+  { name: 'QR Code', emoji: '📷', desc: 'Auto-generated QR code from any URL. Perfect for pointing viewers to socials or a link-in-bio.', category: 'info' },
+  { name: 'Spotify', emoji: '🎵', desc: 'Shows your currently playing track in Spotify Green. One-click OAuth — no API key needed.', category: 'integration' },
 ]
 
 function Widgets() {
   return (
-    <section id="widgets" style={{ 'max-width': '1200px', margin: '0 auto', padding: '24px 32px 80px' }}>
-      <div style={{ 'text-align': 'center', 'margin-bottom': '44px' }}>
-        <div class="sl-eyebrow" style={{ 'margin-bottom': '12px' }}>Widgets</div>
-        <h2 style={{
-          'font-size': 'clamp(26px, 4vw, 40px)', 'font-weight': '700',
-          'letter-spacing': '-0.03em', color: 'var(--text-primary)',
-          'font-family': 'var(--font-display)',
-        }}>13 widgets, zero configuration</h2>
-        <p style={{ 'font-size': '16px', color: 'var(--text-tertiary)', 'margin-top': '12px', 'max-width': '500px', margin: '12px auto 0', 'line-height': '1.6' }}>
-          Drop any widget onto your canvas and it works immediately. No accounts, no API keys for most, no setup headaches.
-        </p>
-      </div>
+    <>
+      <div style={{ 'max-width': '1280px', margin: '0 auto', height: '1px', background: 'var(--mkt-hairline)' }} />
+      <section id="widgets" style={{ 'max-width': '1280px', margin: '0 auto', padding: '32px 32px 76px' }}>
+        <div style={{ 'margin-bottom': '32px' }}>
+          <Eyebrow>Widgets</Eyebrow>
+          <h2 style={{
+            'font-size': 'var(--mkt-text-heading-sm)', 'font-weight': '600',
+            'letter-spacing': 'var(--mkt-ls-heading-sm)', color: 'var(--mkt-cream)',
+            'font-family': 'var(--mkt-font)', margin: '8px 0 0',
+          }}>14 widgets, zero configuration</h2>
+          <p style={{ 'font-size': 'var(--mkt-text-body-sm)', color: 'var(--mkt-muted)', margin: '12px 0 0', 'max-width': '500px', 'line-height': '1.6' }}>
+            Drop any widget onto your canvas and it works immediately. No accounts, no API keys for most, no setup headaches.
+          </p>
+        </div>
 
-      <div style={{ display: 'grid', 'grid-template-columns': 'repeat(auto-fill, minmax(240px, 1fr))', gap: '14px' }}>
-        <For each={WIDGETS}>
-          {(w) => (
-            <div
-              style={{
-                background: 'var(--grad-surface)', 'border-radius': 'var(--radius-xl)',
-                border: '1px solid var(--border-default)', padding: '20px 22px',
-                transition: 'transform var(--dur-base), border-color var(--dur-base)',
-                display: 'flex', 'flex-direction': 'column', gap: '10px',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px)'
-                e.currentTarget.style.borderColor = w.accent + '66'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'none'
-                e.currentTarget.style.borderColor = 'var(--border-default)'
-              }}
-            >
-              <div style={{ display: 'flex', 'align-items': 'center', gap: '11px' }}>
-                <span style={{
-                  width: '38px', height: '38px', 'border-radius': '10px', 'flex-shrink': '0',
-                  display: 'flex', 'align-items': 'center', 'justify-content': 'center',
-                  background: w.accent + '1a', 'font-size': '20px',
-                }}>{w.emoji}</span>
-                <span style={{
-                  'font-size': '15px', 'font-weight': '600', color: 'var(--text-primary)',
-                  'font-family': 'var(--font-display)',
-                }}>{w.name}</span>
-              </div>
-              <p style={{ 'font-size': '13px', color: 'var(--text-tertiary)', 'line-height': '1.55', margin: '0' }}>
-                {w.desc}
-              </p>
-            </div>
-          )}
-        </For>
-      </div>
+        <div style={{ display: 'grid', 'grid-template-columns': 'repeat(auto-fill, minmax(240px, 1fr))', gap: '14px' }}>
+          <For each={WIDGETS}>
+            {(w) => (
+              <ShowcaseCard style={{ display: 'flex', 'flex-direction': 'column', gap: '10px', padding: '20px 22px' }}>
+                <div style={{ display: 'flex', 'align-items': 'center', gap: '11px' }}>
+                  <span style={{
+                    width: '38px', height: '38px', 'border-radius': '10px', 'flex-shrink': '0',
+                    display: 'flex', 'align-items': 'center', 'justify-content': 'center',
+                    background: 'rgba(255,252,225,0.06)', 'font-size': '19px',
+                  }}>{w.emoji}</span>
+                  <span style={{
+                    'font-size': '15px', 'font-weight': '600', color: 'var(--mkt-cream)',
+                    'font-family': 'var(--mkt-font)',
+                  }}>{w.name}</span>
+                </div>
+                <span style={{ 'font-size': '12px', 'font-weight': '600', color: CATEGORY_COLOR[w.category] }}>{CATEGORY_LABEL[w.category]}</span>
+                <p style={{ 'font-size': '13px', color: 'var(--mkt-muted)', 'line-height': '1.55', margin: '0' }}>
+                  {w.desc}
+                </p>
+              </ShowcaseCard>
+            )}
+          </For>
+        </div>
 
-      <div style={{ 'text-align': 'center', 'margin-top': '36px' }}>
-        <Btn href="/builder.html" iconRight>Try all widgets free</Btn>
-      </div>
-    </section>
+        <div style={{ 'text-align': 'center', 'margin-top': '36px' }}>
+          <Pill variant="outline" href="/builder.html" iconRight>Try all widgets free</Pill>
+        </div>
+      </section>
+    </>
   )
 }
 
@@ -462,27 +305,20 @@ function FreeBanner() {
   return (
     <section style={{ 'max-width': '780px', margin: '0 auto', padding: '24px 32px 80px' }}>
       <div style={{
-        background: 'var(--grad-surface)', 'border-radius': 'var(--radius-2xl)',
-        border: '1px solid var(--border-violet)',
-        'box-shadow': 'var(--glow-violet)',
-        padding: '48px 40px', 'text-align': 'center',
-        'background-image': 'radial-gradient(80% 100% at 50% 0%, rgba(134,59,255,0.18) 0%, transparent 70%)',
+        background: 'var(--mkt-canvas)', 'border-radius': 'var(--mkt-radius-card)',
+        border: '1px solid var(--mkt-cream)', padding: '48px 40px', 'text-align': 'center',
       }}>
-        <span style={{
-          display: 'inline-block', 'font-size': '12px', 'font-weight': '700',
-          color: 'var(--green-500)', background: 'rgba(83,252,24,0.1)',
-          border: '1px solid rgba(83,252,24,0.25)', 'border-radius': 'var(--radius-pill)',
-          padding: '4px 14px', 'letter-spacing': '0.06em', 'text-transform': 'uppercase',
-          'margin-bottom': '20px',
-        }}>100% free</span>
+        <div style={{ display: 'flex', 'justify-content': 'center', 'margin-bottom': '20px' }}>
+          <Eyebrow>100% free</Eyebrow>
+        </div>
 
         <h2 style={{
-          'font-size': 'clamp(26px, 4vw, 38px)', 'font-weight': '700',
-          'letter-spacing': '-0.03em', color: 'var(--text-primary)',
-          'font-family': 'var(--font-display)', margin: '0 0 12px',
+          'font-size': 'var(--mkt-text-subheading)', 'font-weight': '600',
+          'letter-spacing': 'var(--mkt-ls-subheading)', color: 'var(--mkt-cream)',
+          'font-family': 'var(--mkt-font)', margin: '0 0 12px',
         }}>Everything included, always.</h2>
 
-        <p style={{ 'font-size': '16px', color: 'var(--text-tertiary)', 'line-height': '1.55', margin: '0 0 32px' }}>
+        <p style={{ 'font-size': 'var(--mkt-text-body-sm)', color: 'var(--mkt-muted)', 'line-height': '1.55', margin: '0 0 32px' }}>
           No trial period. No credit card. No hidden tier.<br />
           Every feature ships free while we're in early access.
         </p>
@@ -493,15 +329,15 @@ function FreeBanner() {
         }}>
           <For each={FREE_FEATS}>
             {(feat) => (
-              <div style={{ display: 'flex', 'align-items': 'center', gap: '9px', 'font-size': '14px', color: 'var(--text-secondary)' }}>
-                <span style={{ color: 'var(--green-500)', 'flex-shrink': '0' }}><IconCheck /></span>
+              <div style={{ display: 'flex', 'align-items': 'center', gap: '9px', 'font-size': '14px', color: 'var(--mkt-cream)' }}>
+                <span style={{ color: 'var(--mkt-green)', 'flex-shrink': '0' }}><IconCheck /></span>
                 {feat}
               </div>
             )}
           </For>
         </div>
 
-        <Btn size="lg" href="/builder.html" iconRight>Build your overlay free</Btn>
+        <Pill size="lg" variant="primary" href="/builder.html" iconRight>Build your overlay free</Pill>
       </div>
     </section>
   )
@@ -515,19 +351,19 @@ function Testimonial() {
       <div style={{
         display: 'flex', 'justify-content': 'center', 'align-items': 'center',
         width: '56px', height: '56px', 'border-radius': '50%',
-        background: 'var(--grad-brand)', margin: '0 auto 22px',
-        'font-family': 'var(--font-display)', 'font-size': '22px', 'font-weight': '700',
-        color: '#fff',
+        background: 'var(--mkt-grad-green)', margin: '0 auto 22px',
+        'font-family': 'var(--mkt-font)', 'font-size': '22px', 'font-weight': '700',
+        color: 'var(--mkt-canvas)',
       }}>N</div>
       <p style={{
-        'font-family': 'var(--font-display)', 'font-size': 'clamp(20px, 3vw, 28px)',
-        'font-weight': '600', 'letter-spacing': '-0.02em',
-        color: 'var(--text-primary)', 'line-height': '1.38',
+        'font-family': 'var(--mkt-font)', 'font-size': 'clamp(20px, 3vw, 28px)',
+        'font-weight': '600', 'letter-spacing': '-0.01em',
+        color: 'var(--mkt-cream)', 'line-height': '1.38',
       }}>
         "I went from a blank canvas to a branded overlay before my intro music finished.
         My chat literally asked what software I switched to."
       </p>
-      <div style={{ 'margin-top': '18px', 'font-size': '14px', color: 'var(--text-tertiary)' }}>
+      <div style={{ 'margin-top': '18px', 'font-size': '14px', color: 'var(--mkt-muted)' }}>
         Nova Reign · 12K followers on Kick
       </div>
     </section>
@@ -538,26 +374,25 @@ function Testimonial() {
 
 function CTA() {
   return (
-    <section style={{ 'max-width': '1200px', margin: '0 auto 80px', padding: '0 32px' }}>
+    <section style={{ 'max-width': '1280px', margin: '0 auto 80px', padding: '0 32px' }}>
       <div style={{
         position: 'relative', overflow: 'hidden',
-        'border-radius': 'var(--radius-3xl)',
-        border: '1px solid var(--border-violet)',
-        background: 'var(--surface-1)',
-        'background-image': 'radial-gradient(120% 140% at 50% 0%, rgba(134,59,255,0.28) 0%, rgba(8,6,13,0) 60%)',
+        'border-radius': 'var(--mkt-radius-card)',
+        border: '1px solid var(--mkt-hairline)',
+        background: 'var(--mkt-canvas)',
         padding: '64px 32px', 'text-align': 'center',
       }}>
-        <img src="/logo-mark.svg" alt="" style={{ width: '48px', height: '48px', 'margin-bottom': '20px' }} />
+        <img src="/logo-mark.svg" alt="" style={{ width: '44px', height: '44px', 'margin-bottom': '20px' }} />
         <h2 style={{
-          'font-size': 'clamp(28px, 4.5vw, 46px)', 'font-weight': '700',
-          'letter-spacing': '-0.03em', color: 'var(--text-primary)',
-          'max-width': '640px', margin: '0 auto', 'font-family': 'var(--font-display)',
+          'font-size': 'var(--mkt-text-heading)', 'font-weight': '600',
+          'letter-spacing': 'var(--mkt-ls-heading)', color: 'var(--mkt-cream)',
+          'max-width': '640px', margin: '0 auto', 'font-family': 'var(--mkt-font)',
         }}>Your next stream deserves a better overlay</h2>
-        <p style={{ 'font-size': '17px', color: 'var(--text-secondary)', 'margin-top': '16px' }}>
+        <p style={{ 'font-size': '17px', color: 'var(--mkt-muted)', 'margin-top': '16px' }}>
           Free to start. Live in two minutes.
         </p>
         <div style={{ display: 'flex', gap: '12px', 'justify-content': 'center', 'margin-top': '28px' }}>
-          <Btn size="lg" href="/builder.html" iconRight>Build your overlay</Btn>
+          <Pill size="lg" variant="primary" href="/builder.html" iconRight>Build your overlay</Pill>
         </div>
       </div>
     </section>
@@ -569,40 +404,29 @@ function CTA() {
 function Footer() {
   return (
     <footer style={{
-      'border-top': '1px solid var(--border-subtle)',
-      padding: '36px 32px',
-      'max-width': '1320px', margin: '0 auto',
-      display: 'flex', 'align-items': 'center', 'justify-content': 'space-between',
-      'flex-wrap': 'wrap', gap: '20px',
+      background: 'var(--mkt-offblack)',
+      'border-top': '1px solid var(--mkt-hairline)',
+      padding: '60px 32px',
     }}>
-      <div style={{ display: 'flex', 'align-items': 'center', gap: '10px' }}>
-        <img src="/logo-mark.svg" alt="" style={{ width: '20px', height: '20px' }} />
-        <span style={{ 'font-family': 'var(--font-display)', 'font-weight': '700', color: 'var(--text-secondary)' }}>
-          Streamlite
-        </span>
-        <span style={{ 'font-size': '13px', color: 'var(--text-muted)', 'margin-left': '6px' }}>
-          © 2026 · Stream brighter
-        </span>
-      </div>
-      <div style={{ display: 'flex', 'align-items': 'center', gap: '10px' }}>
-        <a href="/support.html" style={{
-          'font-size': '13px', color: 'var(--text-tertiary)', 'text-decoration': 'none',
-          padding: '6px 14px', 'border-radius': 'var(--radius-md)',
-          border: '1px solid var(--border-default)', background: 'var(--surface-2)',
-          'font-weight': '500',
-        }}>Support</a>
-        <a href="/feature-request.html" style={{
-          'font-size': '13px', color: 'var(--text-tertiary)', 'text-decoration': 'none',
-          padding: '6px 14px', 'border-radius': 'var(--radius-md)',
-          border: '1px solid var(--border-default)', background: 'var(--surface-2)',
-          'font-weight': '500',
-        }}>Feature Request</a>
-        <a href="/builder.html" style={{
-          'font-size': '13px', color: 'var(--text-tertiary)', 'text-decoration': 'none',
-          padding: '6px 14px', 'border-radius': 'var(--radius-md)',
-          border: '1px solid var(--border-default)', background: 'var(--surface-2)',
-          'font-weight': '500',
-        }}>Open Builder →</a>
+      <div style={{
+        'max-width': '1280px', margin: '0 auto',
+        display: 'flex', 'align-items': 'center', 'justify-content': 'space-between',
+        'flex-wrap': 'wrap', gap: '20px',
+      }}>
+        <div style={{ display: 'flex', 'align-items': 'center', gap: '10px' }}>
+          <img src="/logo-mark.svg" alt="" style={{ width: '20px', height: '20px' }} />
+          <span style={{ 'font-family': 'var(--mkt-font)', 'font-weight': '700', color: 'var(--mkt-cream)' }}>
+            Streamlite
+          </span>
+          <span style={{ 'font-size': '13px', color: 'var(--mkt-muted)', 'margin-left': '6px' }}>
+            © 2026 · Stream brighter
+          </span>
+        </div>
+        <div style={{ display: 'flex', 'align-items': 'center', gap: '4px' }}>
+          <Pill variant="ghost" size="sm" href="/support.html">Support</Pill>
+          <Pill variant="ghost" size="sm" href="/feature-request.html">Feature Request</Pill>
+          <Pill variant="ghost" size="sm" href="/builder.html" iconRight>Open Builder</Pill>
+        </div>
       </div>
     </footer>
   )
@@ -614,12 +438,11 @@ const Landing: Component = () => {
   return (
     <div style={{
       'min-height': '100vh',
-      background: 'var(--bg-app)',
-      'background-image': 'radial-gradient(100% 50% at 50% -5%, rgba(134,59,255,0.14) 0%, rgba(8,6,13,0) 55%)',
-      'font-family': 'var(--font-sans)',
-      color: 'var(--text-body)',
+      background: 'var(--mkt-canvas)',
+      'font-family': 'var(--mkt-font)',
+      color: 'var(--mkt-cream)',
     }}>
-      <Nav />
+      <Nav activeHref="/" />
       <Hero />
       <Features />
       <Widgets />
