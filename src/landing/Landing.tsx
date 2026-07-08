@@ -26,7 +26,7 @@ type Category = 'chat' | 'alerts' | 'info' | 'integration'
 const CATEGORY_COLOR: Record<Category, string> = {
   chat: 'var(--mkt-pink)',
   alerts: 'var(--mkt-orange)',
-  info: 'var(--mkt-lilac)',
+  info: 'var(--warning)',
   integration: 'var(--mkt-blue)',
 }
 
@@ -68,7 +68,7 @@ function ProductCanvas() {
         color: 'var(--mkt-cream)', 'font-size': '13px', 'font-weight': '500',
         border: '1px solid var(--mkt-hairline)',
       }}>
-        <span style={{ color: 'var(--mkt-lilac)' }}>●</span>
+        <span style={{ color: 'var(--warning)' }}>●</span>
         1,284 watching
       </div>
 
@@ -96,7 +96,7 @@ function ProductCanvas() {
         border: '1px solid var(--mkt-hairline)',
       }}>
         <div><span style={{ color: 'var(--mkt-pink)', 'font-weight': '600' }}>novareign</span>: this overlay is so clean 🔥</div>
-        <div><span style={{ color: 'var(--mkt-lilac)', 'font-weight': '600' }}>kaistrom</span>: what tool is that??</div>
+        <div><span style={{ color: 'var(--warning)', 'font-weight': '600' }}>kaistrom</span>: what tool is that??</div>
         <div><span style={{ color: 'var(--mkt-blue)', 'font-weight': '600' }}>pixelwave</span>: built it in 2 min lol</div>
       </div>
 
