@@ -139,6 +139,25 @@
 .sl-scroll::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 999px; }
 .sl-scroll::-webkit-scrollbar-track { background: transparent; }
 
+/* Color swatch inputs — browsers add their own inset padding around the
+   swatch by default (Chromium/Firefox both do this via an internal
+   wrapper), so the visible color never fills the element's own border-box
+   unless these pseudo-elements are overridden directly. */
+.sl-color-swatch {
+  padding: 0;
+}
+.sl-color-swatch::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.sl-color-swatch::-webkit-color-swatch {
+  border: none;
+  border-radius: inherit;
+}
+.sl-color-swatch::-moz-color-swatch {
+  border: none;
+  border-radius: inherit;
+}
+
 /* Checkerboard = OBS transparent canvas */
 .sl-checkerboard {
   background-color: #0e100f;

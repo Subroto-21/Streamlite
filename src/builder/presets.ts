@@ -76,3 +76,57 @@ export function buildPresetConfig(preset: OverlayPreset): LayoutConfig {
   }
   return config
 }
+
+// ── Custom preset — user picks 3-5 colors, we derive a theme from them ────
+
+const CUSTOM_ENABLED_WIDGETS: Array<keyof LayoutConfig['widgets']> =
+  ['chat', 'alert', 'followerGoal', 'viewerCount', 'recentEvents']
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const clean = hex.replace('#', '')
+  const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean
+  const n = parseInt(full, 16)
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }
+}
+
+// Perceived brightness (ITU-R BT.601) — used to pick the darkest color for
+// the background and the lightest for text, so contrast is never a guess.
+function luminance(hex: string): number {
+  const { r, g, b } = hexToRgb(hex)
+  return 0.299 * r + 0.587 * g + 0.114 * b
+}
+
+function saturation(hex: string): number {
+  const { r, g, b } = hexToRgb(hex)
+  const [rn, gn, bn] = [r / 255, g / 255, b / 255]
+  const max = Math.max(rn, gn, bn), min = Math.min(rn, gn, bn)
+  if (max === min) return 0
+  const l = (max + min) / 2
+  return (max - min) / (1 - Math.abs(2 * l - 1))
+}
+
+export function buildCustomConfig(colors: string[]): LayoutConfig {
+  const sorted = [...colors].sort((a, b) => luminance(a) - luminance(b))
+  const backgroundColor = sorted[0]
+  const textColor = sorted[sorted.length - 1]
+  // Accent = the most saturated of the remaining colors (falls back to the
+  // full set if only 2 unique brightness levels were given), so a vivid
+  // brand color picked anywhere in the middle still becomes the accent
+  // rather than being averaged away.
+  const middle = sorted.slice(1, -1)
+  const accentPool = middle.length > 0 ? middle : sorted
+  const accentColor = [...accentPool].sort((a, b) => saturation(b) - saturation(a))[0]
+
+  const theme = {
+    backgroundColor, backgroundOpacity: 0.65, textColor, accentColor,
+    borderRadius: 12, fontFamily: 'inter' as const, fontSize: 14, animation: 'fade' as const,
+  }
+  const config = structuredClone(DEFAULT_CONFIG)
+  for (const key in config.widgets) {
+    const k = key as keyof LayoutConfig['widgets']
+    Object.assign(config.widgets[k], theme, {
+      enabled: CUSTOM_ENABLED_WIDGETS.includes(k),
+    })
+  }
+  return config
+}
