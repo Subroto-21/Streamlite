@@ -4,7 +4,7 @@ import Pill from './Pill'
 export const MARKETING_LINKS = [
   { label: 'Features', href: '/#features' },
   { label: 'Widgets', href: '/#widgets' },
-  { label: 'Support', href: '/support.html' },
+  { label: 'Builder', href: '/builder.html' },
   { label: 'Feature Request', href: '/feature-request.html' },
 ]
 

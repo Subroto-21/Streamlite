@@ -15,7 +15,7 @@ function eventIcon(type: string): string {
 }
 
 function eventLabel(alert: { type: string; username: string; monthsSubscribed?: number; quantityGifted?: number }): string {
-  if (alert.type === 'follow') return `${alert.username} followed`
+  if (alert.type === 'follow') return alert.username ? `${alert.username} followed` : 'New follower'
   if (alert.type === 'subscription') return `${alert.username} subscribed${alert.monthsSubscribed ? ` (${alert.monthsSubscribed}mo)` : ''}`
   if (alert.type === 'gift_sub') return `${alert.username} gifted ${alert.quantityGifted ?? 1} sub${(alert.quantityGifted ?? 1) !== 1 ? 's' : ''}`
   return alert.username

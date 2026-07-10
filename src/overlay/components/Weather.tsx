@@ -78,7 +78,17 @@ const Weather: Component<Props> = (props) => {
     setLoading(false)
   }
 
+  // Only fetch when the widget is actually enabled. The builder mounts every
+  // widget (disabled ones are just display:none), so without this gate the
+  // effect would run on page load and — with no city set — silently trigger the
+  // browser's geolocation permission prompt the moment you open the builder,
+  // which reads as shady. Now location is only ever requested as a direct
+  // consequence of the user turning the Weather widget on.
   createEffect(() => {
+    if (!props.style.enabled) {
+      setLoading(false)
+      return
+    }
     const city = props.style.city
     void load(city)
     const timer = setInterval(() => { void load(city) }, 600_000)
