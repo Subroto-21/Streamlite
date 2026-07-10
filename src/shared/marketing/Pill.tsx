@@ -58,7 +58,6 @@ const Pill = (props: Props) => {
       "justify-content": props.fullWidth ? "center" : "flex-start",
       padding: pad(),
       "border-radius": "var(--mkt-radius-pill)",
-      cursor: "pointer",
       "font-size": fontSize(),
       "font-weight": "600",
       "font-family": "var(--mkt-font)",
